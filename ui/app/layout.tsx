@@ -15,8 +15,8 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "IoT Dashboard",
-  description: "IoT Dashboard with real-time monitoring",
+  title: "Cospa CRM",
+  description: "Cospa CRM - Customer Relationship Management",
 };
 
 export default async function RootLayout({

@@ -27,7 +27,7 @@ export default function PrivacyPage() {
             <p>We collect information that you provide directly to us:</p>
             <ul className="list-disc pl-6 space-y-2">
               <li>Account information (email, name)</li>
-              <li>Device data and telemetry from your IoT devices</li>
+              <li>CRM data including contacts, companies, and deals</li>
               <li>Usage data and interaction with our service</li>
             </ul>
           </section>
@@ -38,9 +38,9 @@ export default function PrivacyPage() {
             </h2>
             <p>We use the collected information to:</p>
             <ul className="list-disc pl-6 space-y-2">
-              <li>Provide and maintain our IoT Dashboard service</li>
-              <li>Monitor and display your device data</li>
-              <li>Send notifications and alerts about your devices</li>
+              <li>Provide and maintain our Cospa CRM service</li>
+              <li>Manage and display your CRM data</li>
+              <li>Send notifications and alerts about your activities</li>
               <li>Improve and optimize our service</li>
               <li>Ensure security and prevent fraud</li>
             </ul>

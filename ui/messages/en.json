@@ -21,7 +21,7 @@
     "dontHaveAccount": "Don't have an account?"
   },
   "nav": {
-    "iot": "IoT Platform",
+    "iot": "Cospa CRM",
     "dashboard": "Dashboard",
     "devices": "Devices",
     "assets": "Assets",
@@ -48,7 +48,7 @@
   "auth": {
     "signIn": "Sign In",
     "signInTitle": "Sign in with Thingsboard account",
-    "signInDescription": "Enter your credentials to access the IoT Dashboard",
+    "signInDescription": "Enter your credentials to access Cospa CRM",
     "email": "Email",
     "password": "Password",
     "signingIn": "Signing in...",
@@ -58,12 +58,12 @@
     "and": "and",
     "privacyPolicy": "Privacy Policy",
     "crmLogin": "CRM Admin Login",
-    "iotLogin": "IoT Platform Login"
+    "iotLogin": "Cospa CRM Login"
   },
   "dashboard": {
     "title": "Dashboard",
     "welcomeBack": "Welcome back",
-    "overview": "Overview of your IoT devices and assets",
+    "overview": "Overview of your CRM data and activities",
     "totalDevices": "Total Devices",
     "activeDevices": "Active Devices",
     "totalAssets": "Total Assets",
@@ -77,7 +77,7 @@
   },
   "devices": {
     "title": "Devices",
-    "description": "Manage and monitor your IoT devices",
+    "description": "Manage and monitor your devices",
     "devicesCount": "{count} devices",
     "name": "Name",
     "label": "Label",
@@ -100,10 +100,10 @@
     "noAssets": "No assets found"
   },
   "assistant": {
-    "title": "IoT Assistant",
-    "greeting": "Hello! I'm your IoT Assistant. Ask me anything about your devices, sensors, or dashboard features.",
-    "placeholder": "Ask about your IoT devices...",
-    "comingSoonResponse": "This feature is coming soon! I'll be able to help you with device monitoring, data analysis, and troubleshooting your IoT devices."
+    "title": "Cospa Assistant",
+    "greeting": "Hello! I'm your Cospa Assistant. Ask me anything about your CRM data, customers, or dashboard features.",
+    "placeholder": "Ask about your CRM data...",
+    "comingSoonResponse": "This feature is coming soon! I'll be able to help you with customer insights, data analysis, and managing your CRM."
   },
   "settings": {
     "title": "Settings",

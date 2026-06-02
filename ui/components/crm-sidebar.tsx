@@ -138,7 +138,7 @@ export function CrmSidebar({ collapsed = false, onNavigate }: CrmSidebarProps) {
           <Building2 className="h-5 w-5 text-white" />
         </div>
         {!collapsed && (
-          <span className="font-semibold text-foreground">CRM Portal</span>
+          <span className="font-semibold text-foreground">Cospa CRM</span>
         )}
       </div>
 
@@ -160,7 +160,7 @@ export function CrmSidebar({ collapsed = false, onNavigate }: CrmSidebarProps) {
         ))}
       </nav>
 
-      {/* Link to IoT Dashboard */}
+      {/* Link to Main Dashboard */}
       <div className={cn("border-t border-border p-3", collapsed && "px-2")}>
         <Link
           href="/signin"
@@ -169,10 +169,10 @@ export function CrmSidebar({ collapsed = false, onNavigate }: CrmSidebarProps) {
             "flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors",
             collapsed && "justify-center px-2"
           )}
-          title={collapsed ? "IoT Dashboard" : undefined}
+          title={collapsed ? "Main Dashboard" : undefined}
         >
           <LayoutDashboard className="h-4 w-4" />
-          {!collapsed && <span>IoT Dashboard</span>}
+          {!collapsed && <span>Main Dashboard</span>}
         </Link>
       </div>
     </aside>

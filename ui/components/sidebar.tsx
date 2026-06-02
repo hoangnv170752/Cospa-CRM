@@ -88,13 +88,13 @@ export function Sidebar({ collapsed = false }: SidebarProps) {
       >
         <Image
           src="/iot-icon.png"
-          alt="IoT"
+          alt="Cospa CRM"
           width={32}
           height={32}
           className="rounded-md"
         />
         {!collapsed && (
-          <span className="font-semibold text-foreground">IoT Dashboard</span>
+          <span className="font-semibold text-foreground">Cospa CRM</span>
         )}
       </div>
 

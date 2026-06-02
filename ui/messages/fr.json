@@ -21,7 +21,7 @@
     "dontHaveAccount": "Vous n'avez pas de compte ?"
   },
   "nav": {
-    "iot": "Plateforme IoT",
+    "iot": "Cospa CRM",
     "dashboard": "Tableau de bord",
     "devices": "Appareils",
     "assets": "Actifs",
@@ -48,7 +48,7 @@
   "auth": {
     "signIn": "Connexion",
     "signInTitle": "Connectez-vous avec votre compte Thingsboard",
-    "signInDescription": "Entrez vos identifiants pour accéder au tableau de bord IoT",
+    "signInDescription": "Entrez vos identifiants pour accéder à Cospa CRM",
     "email": "E-mail",
     "password": "Mot de passe",
     "signingIn": "Connexion en cours...",
@@ -58,12 +58,12 @@
     "and": "et",
     "privacyPolicy": "Politique de confidentialité",
     "crmLogin": "Connexion Admin CRM",
-    "iotLogin": "Connexion Plateforme IoT"
+    "iotLogin": "Connexion Cospa CRM"
   },
   "dashboard": {
     "title": "Tableau de bord",
     "welcomeBack": "Bon retour",
-    "overview": "Aperçu de vos appareils et actifs IoT",
+    "overview": "Aperçu de vos données et activités CRM",
     "totalDevices": "Total des appareils",
     "activeDevices": "Appareils actifs",
     "totalAssets": "Total des actifs",
@@ -77,7 +77,7 @@
   },
   "devices": {
     "title": "Appareils",
-    "description": "Gérer et surveiller vos appareils IoT",
+    "description": "Gérer et surveiller vos appareils",
     "devicesCount": "{count} appareils",
     "name": "Nom",
     "label": "Libellé",
@@ -100,10 +100,10 @@
     "noAssets": "Aucun actif trouvé"
   },
   "assistant": {
-    "title": "Assistant IoT",
-    "greeting": "Bonjour ! Je suis votre assistant IoT. Posez-moi n'importe quelle question sur vos appareils, capteurs ou fonctionnalités du tableau de bord.",
-    "placeholder": "Posez une question sur vos appareils IoT...",
-    "comingSoonResponse": "Cette fonctionnalité arrive bientôt ! Je pourrai vous aider avec la surveillance des appareils, l'analyse des données et le dépannage de vos appareils IoT."
+    "title": "Assistant Cospa",
+    "greeting": "Bonjour ! Je suis votre assistant Cospa. Posez-moi n'importe quelle question sur vos données CRM, clients ou fonctionnalités du tableau de bord.",
+    "placeholder": "Posez une question sur vos données CRM...",
+    "comingSoonResponse": "Cette fonctionnalité arrive bientôt ! Je pourrai vous aider avec les analyses clients, l'analyse des données et la gestion de votre CRM."
   },
   "settings": {
     "title": "Paramètres",

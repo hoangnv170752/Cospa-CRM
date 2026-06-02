@@ -77,7 +77,7 @@ export default function CrmSignInPage() {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500">
             <Building2 className="h-5 w-5 text-white" />
           </div>
-          <span className="text-xl font-semibold text-foreground">CRM Portal</span>
+          <span className="text-xl font-semibold text-foreground">Cospa CRM</span>
         </div>
 
         {/* Form */}
@@ -161,10 +161,10 @@ export default function CrmSignInPage() {
               </p>
             </div>
 
-            {/* Link to IoT signin */}
+            {/* Link to main signin */}
             <div className="mt-4 text-center">
               <p className="text-sm text-muted-foreground">
-                Looking for IoT Dashboard?{" "}
+                Looking for main dashboard?{" "}
                 <Link
                   href="/signin"
                   className="font-medium text-foreground underline underline-offset-4 hover:text-primary"
@@ -197,7 +197,7 @@ export default function CrmSignInPage() {
           <div className="animate-float rounded-2xl bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm shadow-xl p-6">
             <div className="flex items-center gap-3 mb-4">
               <Building2 className="h-6 w-6 text-indigo-500" />
-              <span className="font-semibold text-foreground">CRM Features</span>
+              <span className="font-semibold text-foreground">Cospa CRM Features</span>
             </div>
             <div className="overflow-hidden">
               <p

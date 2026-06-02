@@ -13,14 +13,14 @@ import { useAuth } from "@/contexts/auth-context";
 import { toast } from "sonner";
 
 const suggestions = [
-  "Monitor temperature sensors in real-time",
-  "Track device connectivity status",
-  "Set up automated alerts",
-  "Visualize sensor data with charts",
-  "Manage multiple IoT devices",
-  "Configure device thresholds",
-  "View historical data analytics",
-  "Control actuators remotely",
+  "Manage customer relationships effectively",
+  "Track deals and sales pipeline",
+  "Organize contacts and companies",
+  "Monitor business performance",
+  "Generate insightful reports",
+  "Streamline vendor management",
+  "Handle support tickets efficiently",
+  "Manage contracts seamlessly",
 ];
 
 export default function SignInPage() {
@@ -70,12 +70,12 @@ export default function SignInPage() {
         <div className="flex items-center gap-2">
           <Image
             src="/iot-icon.png"
-            alt="IoT Dashboard"
+            alt="Cospa CRM"
             width={32}
             height={32}
             className="h-8 w-8"
           />
-          <span className="text-xl font-semibold text-foreground">IoT Dashboard</span>
+          <span className="text-xl font-semibold text-foreground">Cospa CRM</span>
         </div>
 
         {/* Form */}

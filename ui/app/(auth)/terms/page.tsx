@@ -25,7 +25,7 @@ export default function TermsPage() {
               1. Acceptance of Terms
             </h2>
             <p>
-              By accessing and using the IoT Dashboard service, you agree to be
+              By accessing and using the Cospa CRM service, you agree to be
               bound by these Terms of Service. If you do not agree to these
               terms, please do not use our service.
             </p>
@@ -36,9 +36,9 @@ export default function TermsPage() {
               2. Description of Service
             </h2>
             <p>
-              IoT Dashboard provides a platform for monitoring and managing IoT
-              devices, including but not limited to device status tracking, data
-              visualization, and asset management.
+              Cospa CRM provides a platform for customer relationship management,
+              including but not limited to contact management, deal tracking, data
+              visualization, and business asset management.
             </p>
           </section>
 

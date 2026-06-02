@@ -21,7 +21,7 @@
     "dontHaveAccount": "¿No tienes cuenta?"
   },
   "nav": {
-    "iot": "Plataforma IoT",
+    "iot": "Cospa CRM",
     "dashboard": "Panel",
     "devices": "Dispositivos",
     "assets": "Activos",
@@ -48,7 +48,7 @@
   "auth": {
     "signIn": "Iniciar sesión",
     "signInTitle": "Inicia sesión con tu cuenta de Thingsboard",
-    "signInDescription": "Ingresa tus credenciales para acceder al panel de IoT",
+    "signInDescription": "Ingresa tus credenciales para acceder a Cospa CRM",
     "email": "Correo electrónico",
     "password": "Contraseña",
     "signingIn": "Iniciando sesión...",
@@ -58,12 +58,12 @@
     "and": "y",
     "privacyPolicy": "Política de privacidad",
     "crmLogin": "Inicio de sesión Admin CRM",
-    "iotLogin": "Inicio de sesión Plataforma IoT"
+    "iotLogin": "Inicio de sesión Cospa CRM"
   },
   "dashboard": {
     "title": "Panel",
     "welcomeBack": "Bienvenido de nuevo",
-    "overview": "Resumen de tus dispositivos y activos IoT",
+    "overview": "Resumen de tus datos y actividades CRM",
     "totalDevices": "Total de dispositivos",
     "activeDevices": "Dispositivos activos",
     "totalAssets": "Total de activos",
@@ -77,7 +77,7 @@
   },
   "devices": {
     "title": "Dispositivos",
-    "description": "Gestiona y monitorea tus dispositivos IoT",
+    "description": "Gestiona y monitorea tus dispositivos",
     "devicesCount": "{count} dispositivos",
     "name": "Nombre",
     "label": "Etiqueta",
@@ -100,10 +100,10 @@
     "noAssets": "No se encontraron activos"
   },
   "assistant": {
-    "title": "Asistente IoT",
-    "greeting": "¡Hola! Soy tu asistente IoT. Pregúntame cualquier cosa sobre tus dispositivos, sensores o funciones del panel.",
-    "placeholder": "Pregunta sobre tus dispositivos IoT...",
-    "comingSoonResponse": "¡Esta función estará disponible pronto! Podré ayudarte con el monitoreo de dispositivos, análisis de datos y solución de problemas de tus dispositivos IoT."
+    "title": "Asistente Cospa",
+    "greeting": "¡Hola! Soy tu asistente Cospa. Pregúntame cualquier cosa sobre tus datos CRM, clientes o funciones del panel.",
+    "placeholder": "Pregunta sobre tus datos CRM...",
+    "comingSoonResponse": "¡Esta función estará disponible pronto! Podré ayudarte con información de clientes, análisis de datos y gestión de tu CRM."
   },
   "settings": {
     "title": "Configuración",

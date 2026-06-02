@@ -66,7 +66,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 import { useCrmAuth } from "@/contexts/crm-auth-context";
-import { crmWebSocket, CrmWsMessage } from "@/lib/crm-websocket";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
 const CRM_API_URL = process.env.NEXT_PUBLIC_CRM_API_URL || "http://localhost:5001/api";
@@ -344,43 +343,58 @@ export default function TenantsPage() {
     setChatInput("");
     setShowChatDialog(true);
 
-    // Connect WebSocket if not connected
-    if (token && !crmWebSocket.isConnected()) {
-      crmWebSocket.connect(token);
-    }
+    const sessionTitle = `Chat with ${tenant.name}`;
 
-    // Create or get chat session for this tenant
     try {
-      const response = await fetch(`${CRM_API_URL}/chat/sessions`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          title: `Chat with ${tenant.name}`,
-          tenantId: tenant.id,
-        }),
+      // First, try to find existing session for this tenant
+      const listRes = await fetch(`${CRM_API_URL}/chat/sessions?limit=100`, {
+        headers: { Authorization: `Bearer ${token}` },
       });
 
-      if (response.ok) {
-        const session = await response.json();
-        setChatSessionId(session.id);
+      let sessionId: string | null = null;
 
-        // Subscribe to chat channel
-        crmWebSocket.subscribeChannel(`chat:${session.id}`);
+      if (listRes.ok) {
+        const listData = await listRes.json();
+        // Find session with matching title (for this tenant)
+        const existingSession = listData.data?.find(
+          (s: { title: string }) => s.title === sessionTitle
+        );
+        if (existingSession) {
+          sessionId = existingSession.id;
+        }
+      }
+
+      // If no existing session, create new one
+      if (!sessionId) {
+        const createRes = await fetch(`${CRM_API_URL}/chat/sessions`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ title: sessionTitle }),
+        });
+
+        if (createRes.ok) {
+          const newSession = await createRes.json();
+          sessionId = newSession.id;
+        }
+      }
+
+      if (sessionId) {
+        setChatSessionId(sessionId);
 
         // Load existing messages
-        const messagesRes = await fetch(`${CRM_API_URL}/chat/sessions/${session.id}/messages`, {
+        const sessionRes = await fetch(`${CRM_API_URL}/chat/sessions/${sessionId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (messagesRes.ok) {
-          const data = await messagesRes.json();
-          setChatMessages(data.data || []);
+        if (sessionRes.ok) {
+          const sessionData = await sessionRes.json();
+          setChatMessages(sessionData.messages || []);
         }
       }
     } catch (error) {
-      console.error("Failed to create chat session:", error);
+      console.error("Failed to open chat session:", error);
       toast.error("Failed to start chat");
     }
   };
@@ -402,80 +416,38 @@ export default function TenantsPage() {
     setChatMessages(prev => [...prev, userMessage]);
 
     try {
-      // Send via WebSocket for real-time
-      crmWebSocket.sendChatMessage(chatSessionId, content);
+      // Send via REST API
+      const response = await fetch(`${CRM_API_URL}/chat/sessions/${chatSessionId}/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          role: "user",
+          content,
+        }),
+      });
+
+      if (response.ok) {
+        const savedMessage = await response.json();
+        // Update temp message with real ID
+        setChatMessages(prev =>
+          prev.map(msg => msg.id === userMessage.id ? { ...msg, id: savedMessage.id } : msg)
+        );
+      } else {
+        throw new Error("Failed to send message");
+      }
     } catch (error) {
       console.error("Failed to send message:", error);
       toast.error("Failed to send message");
+      // Remove temp message on error
+      setChatMessages(prev => prev.filter(msg => msg.id !== userMessage.id));
     } finally {
       setIsSendingChat(false);
     }
   };
 
-  // WebSocket message handlers
-  useEffect(() => {
-    if (!token) return;
-
-    const unsubscribeStream = crmWebSocket.on("chat_stream", (data: CrmWsMessage) => {
-      if (data.sessionId === chatSessionId) {
-        // Handle streaming response
-        setChatMessages(prev => {
-          const lastMsg = prev[prev.length - 1];
-          if (lastMsg?.role === "assistant" && lastMsg.id === `stream-${data.sessionId}`) {
-            // Append to existing stream message
-            return [
-              ...prev.slice(0, -1),
-              { ...lastMsg, content: lastMsg.content + (data.chunk as string) },
-            ];
-          } else {
-            // Start new stream message
-            return [
-              ...prev,
-              {
-                id: `stream-${data.sessionId}`,
-                role: "assistant" as const,
-                content: data.chunk as string,
-                createdAt: new Date().toISOString(),
-              },
-            ];
-          }
-        });
-      }
-    });
-
-    const unsubscribeComplete = crmWebSocket.on("chat_complete", (data: CrmWsMessage) => {
-      if (data.sessionId === chatSessionId) {
-        // Update stream message with final ID
-        setChatMessages(prev => {
-          const lastMsg = prev[prev.length - 1];
-          if (lastMsg?.id === `stream-${data.sessionId}`) {
-            return [
-              ...prev.slice(0, -1),
-              { ...lastMsg, id: data.messageId as string },
-            ];
-          }
-          return prev;
-        });
-      }
-    });
-
-    const unsubscribeMessage = crmWebSocket.on("chat_message", (data: CrmWsMessage) => {
-      if (data.sessionId === chatSessionId && data.message) {
-        const msg = data.message as { id: string; role: "user" | "assistant"; content: string; createdAt: string };
-        setChatMessages(prev => {
-          // Avoid duplicates
-          if (prev.some(m => m.id === msg.id)) return prev;
-          return [...prev, msg];
-        });
-      }
-    });
-
-    return () => {
-      unsubscribeStream();
-      unsubscribeComplete();
-      unsubscribeMessage();
-    };
-  }, [token, chatSessionId]);
 
   if (!isSysAdmin) {
     return (
@@ -913,7 +885,7 @@ export default function TenantsPage() {
 
       {/* Chat Dialog */}
       <Dialog open={showChatDialog} onOpenChange={setShowChatDialog}>
-        <DialogContent className="max-w-2xl h-[600px] flex flex-col p-0">
+        <DialogContent showCloseButton={false} className="max-w-2xl h-[600px] flex flex-col p-0">
           <DialogHeader className="px-4 py-3 border-b">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { PanelLeftClose, PanelLeft, LogOut, User } from "lucide-react";
+import { PanelLeftClose, PanelLeft, LogOut, User, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useCrmAuth } from "@/contexts/crm-auth-context";
 import { useRouter } from "next/navigation";
@@ -18,6 +18,7 @@ interface CrmHeaderProps {
   title?: string;
   sidebarOpen: boolean;
   onToggleSidebar: () => void;
+  onMobileMenuClick?: () => void;
 }
 
 const languages = [
@@ -27,7 +28,7 @@ const languages = [
   { code: "es", label: "Spanish", flag: "ES" },
 ];
 
-export function CrmHeader({ sidebarOpen, onToggleSidebar }: CrmHeaderProps) {
+export function CrmHeader({ sidebarOpen, onToggleSidebar, onMobileMenuClick }: CrmHeaderProps) {
   const t = useTranslations();
   const { user, logout } = useCrmAuth();
   const router = useRouter();
@@ -51,6 +52,16 @@ export function CrmHeader({ sidebarOpen, onToggleSidebar }: CrmHeaderProps) {
   return (
     <header className="flex h-14 items-center justify-between border-b border-border bg-background px-4">
       <div className="flex items-center gap-2">
+        {/* Mobile menu button */}
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onMobileMenuClick}
+          className="md:hidden"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+        {/* Desktop sidebar toggle */}
         <Button
           variant="ghost"
           size="icon"

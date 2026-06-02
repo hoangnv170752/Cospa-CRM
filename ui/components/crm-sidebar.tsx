@@ -78,9 +78,10 @@ interface NavLinkProps {
   item: NavItem;
   collapsed?: boolean;
   title: string;
+  onClick?: () => void;
 }
 
-function NavLink({ item, collapsed, title }: NavLinkProps) {
+function NavLink({ item, collapsed, title, onClick }: NavLinkProps) {
   const pathname = usePathname();
   const isActive = pathname === item.href;
 
@@ -88,6 +89,7 @@ function NavLink({ item, collapsed, title }: NavLinkProps) {
     <Link
       href={item.href}
       title={collapsed ? title : undefined}
+      onClick={onClick}
       className={cn(
         "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
         isActive
@@ -104,9 +106,10 @@ function NavLink({ item, collapsed, title }: NavLinkProps) {
 
 interface CrmSidebarProps {
   collapsed?: boolean;
+  onNavigate?: () => void;
 }
 
-export function CrmSidebar({ collapsed = false }: CrmSidebarProps) {
+export function CrmSidebar({ collapsed = false, onNavigate }: CrmSidebarProps) {
   const t = useTranslations();
   const { user } = useCrmAuth();
 
@@ -152,6 +155,7 @@ export function CrmSidebar({ collapsed = false }: CrmSidebarProps) {
             item={item}
             collapsed={collapsed}
             title={t(item.titleKey)}
+            onClick={onNavigate}
           />
         ))}
       </nav>
@@ -160,6 +164,7 @@ export function CrmSidebar({ collapsed = false }: CrmSidebarProps) {
       <div className={cn("border-t border-border p-3", collapsed && "px-2")}>
         <Link
           href="/signin"
+          onClick={onNavigate}
           className={cn(
             "flex items-center gap-2 rounded-lg px-3 py-2 text-xs text-muted-foreground hover:bg-accent hover:text-accent-foreground transition-colors",
             collapsed && "justify-center px-2"

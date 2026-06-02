@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Loader2, ChevronLeft, ChevronRight, Search, Plus, Building2, Globe, Phone, MapPin } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight, Search, Plus, Building2, Globe, Phone, MapPin, FileUp } from "lucide-react";
+import { ExcelImportDialog, ExcelImportConfig } from "@/components/excel-import-dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -47,6 +48,7 @@ export default function CompaniesPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingCompany, setEditingCompany] = useState<Company | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   // Form state
   const [formName, setFormName] = useState("");
@@ -179,6 +181,65 @@ export default function CompaniesPage() {
     return t(`crm.companies.sizes.${size}`);
   };
 
+  const importConfig: ExcelImportConfig<Partial<Company>> = {
+    title: "Import Companies",
+    description: "Upload an Excel file to bulk import companies into the CRM.",
+    columns: [
+      { excelColumn: "Name", fieldName: "name", required: true },
+      { excelColumn: "Industry", fieldName: "industry" },
+      { excelColumn: "Website", fieldName: "website" },
+      { excelColumn: "Phone", fieldName: "phone" },
+      { excelColumn: "Address", fieldName: "address" },
+      {
+        excelColumn: "Size",
+        fieldName: "size",
+        transform: (v) => {
+          const val = String(v).toLowerCase();
+          if (["small", "medium", "large", "enterprise"].includes(val)) return val;
+          return undefined;
+        }
+      },
+    ],
+    sampleData: [
+      { Name: "Acme Corp", Industry: "Technology", Website: "https://acme.com", Phone: "+1 555-0123", Address: "123 Main St", Size: "medium" },
+      { Name: "Tech Solutions", Industry: "Software", Website: "https://techsol.com", Phone: "+1 555-0456", Address: "456 Oak Ave", Size: "large" },
+    ],
+    validateRow: (row) => {
+      if (!row.name || String(row.name).trim() === "") {
+        return { valid: false, error: "Name is required" };
+      }
+      return { valid: true };
+    },
+    onImport: async (items) => {
+      let success = 0;
+      let failed = 0;
+      const errors: string[] = [];
+
+      for (const item of items) {
+        try {
+          await createCompany({
+            name: String(item.name).trim(),
+            industry: item.industry ? String(item.industry).trim() : undefined,
+            website: item.website ? String(item.website).trim() : undefined,
+            phone: item.phone ? String(item.phone).trim() : undefined,
+            address: item.address ? String(item.address).trim() : undefined,
+            size: item.size as Company["size"],
+          });
+          success++;
+        } catch (err) {
+          failed++;
+          errors.push(`Failed to import "${item.name}": ${err instanceof Error ? err.message : "Unknown error"}`);
+        }
+      }
+
+      if (success > 0) {
+        loadCompanies();
+      }
+
+      return { success, failed, errors: errors.length > 0 ? errors : undefined };
+    },
+  };
+
   return (
     <div className="p-4 md:p-6">
       <div className="flex flex-col gap-6">
@@ -192,10 +253,16 @@ export default function CompaniesPage() {
               {t("crm.companies.description")} ({totalElements} total)
             </p>
           </div>
-          <Button onClick={() => handleOpenDialog()} size="sm">
-            <Plus className="h-4 w-4" />
-            {t("crm.companies.addCompany")}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setImportDialogOpen(true)} size="sm">
+              <FileUp className="h-4 w-4" />
+              Import Excel
+            </Button>
+            <Button onClick={() => handleOpenDialog()} size="sm">
+              <Plus className="h-4 w-4" />
+              {t("crm.companies.addCompany")}
+            </Button>
+          </div>
         </div>
 
         {/* Search */}
@@ -432,6 +499,13 @@ export default function CompaniesPage() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Excel Import Dialog */}
+        <ExcelImportDialog
+          open={importDialogOpen}
+          onOpenChange={setImportDialogOpen}
+          config={importConfig}
+        />
       </div>
     </div>
   );

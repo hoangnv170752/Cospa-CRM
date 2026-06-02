@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Loader2, ChevronLeft, ChevronRight, Search, Plus, Truck, Globe, Mail, Phone, Star } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight, Search, Plus, Truck, Globe, Mail, Phone, Star, FileUp } from "lucide-react";
+import { ExcelImportDialog, ExcelImportConfig } from "@/components/excel-import-dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -56,6 +57,7 @@ export default function VendorsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingVendor, setEditingVendor] = useState<Vendor | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   // Form state
   const [formName, setFormName] = useState("");
@@ -226,6 +228,88 @@ export default function VendorsPage() {
     );
   };
 
+  const importConfig: ExcelImportConfig<Partial<Vendor>> = {
+    title: "Import Vendors",
+    description: "Upload an Excel file to bulk import vendors into the system.",
+    columns: [
+      { excelColumn: "Name", fieldName: "name", required: true },
+      { excelColumn: "Code", fieldName: "code", required: true },
+      {
+        excelColumn: "Type",
+        fieldName: "type",
+        transform: (v) => {
+          const val = String(v).toLowerCase().replace(/\s+/g, "_");
+          if (["supplier", "manufacturer", "distributor", "service_provider"].includes(val)) return val;
+          return "supplier";
+        },
+      },
+      { excelColumn: "Email", fieldName: "email" },
+      { excelColumn: "Phone", fieldName: "phone" },
+      { excelColumn: "Website", fieldName: "website" },
+      { excelColumn: "Address", fieldName: "address" },
+      { excelColumn: "City", fieldName: "city" },
+      { excelColumn: "Country", fieldName: "country" },
+      { excelColumn: "Currency", fieldName: "currency" },
+      {
+        excelColumn: "Status",
+        fieldName: "status",
+        transform: (v) => {
+          const val = String(v).toLowerCase();
+          if (["pending", "active", "inactive", "blacklisted"].includes(val)) return val;
+          return "pending";
+        },
+      },
+      { excelColumn: "Notes", fieldName: "notes" },
+    ],
+    sampleData: [
+      { Name: "Acme Supplies", Code: "ACM-001", Type: "supplier", Email: "contact@acme.com", Phone: "+1 555-0123", Website: "https://acme.com", Address: "123 Main St", City: "New York", Country: "USA", Currency: "USD", Status: "active", Notes: "" },
+      { Name: "Tech Parts Inc", Code: "TPI-001", Type: "manufacturer", Email: "sales@techparts.com", Phone: "+1 555-0456", Website: "https://techparts.com", Address: "456 Oak Ave", City: "Boston", Country: "USA", Currency: "USD", Status: "pending", Notes: "" },
+    ],
+    validateRow: (row) => {
+      if (!row.name || String(row.name).trim() === "") {
+        return { valid: false, error: "Name is required" };
+      }
+      if (!row.code || String(row.code).trim() === "") {
+        return { valid: false, error: "Code is required" };
+      }
+      return { valid: true };
+    },
+    onImport: async (items) => {
+      let success = 0;
+      let failed = 0;
+      const errors: string[] = [];
+
+      for (const item of items) {
+        try {
+          await createVendor({
+            name: String(item.name).trim(),
+            code: String(item.code).trim(),
+            type: (item.type as Vendor["type"]) || "supplier",
+            email: item.email ? String(item.email).trim() : undefined,
+            phone: item.phone ? String(item.phone).trim() : undefined,
+            website: item.website ? String(item.website).trim() : undefined,
+            address: item.address ? String(item.address).trim() : undefined,
+            city: item.city ? String(item.city).trim() : undefined,
+            country: item.country ? String(item.country).trim() : undefined,
+            currency: item.currency ? String(item.currency).trim() : "USD",
+            status: (item.status as Vendor["status"]) || "pending",
+            notes: item.notes ? String(item.notes).trim() : undefined,
+          });
+          success++;
+        } catch (err) {
+          failed++;
+          errors.push(`Failed to import "${item.name}": ${err instanceof Error ? err.message : "Unknown error"}`);
+        }
+      }
+
+      if (success > 0) {
+        loadVendors();
+      }
+
+      return { success, failed, errors: errors.length > 0 ? errors : undefined };
+    },
+  };
+
   return (
     <div className="p-4 md:p-6">
       <div className="flex flex-col gap-6">
@@ -239,10 +323,16 @@ export default function VendorsPage() {
               {t("crm.vendors.description")} ({totalElements} total)
             </p>
           </div>
-          <Button onClick={() => handleOpenDialog()} size="sm">
-            <Plus className="h-4 w-4" />
-            {t("crm.vendors.addVendor")}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setImportDialogOpen(true)} size="sm">
+              <FileUp className="h-4 w-4" />
+              Import Excel
+            </Button>
+            <Button onClick={() => handleOpenDialog()} size="sm">
+              <Plus className="h-4 w-4" />
+              {t("crm.vendors.addVendor")}
+            </Button>
+          </div>
         </div>
 
         {/* Filters */}
@@ -560,6 +650,13 @@ export default function VendorsPage() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Excel Import Dialog */}
+        <ExcelImportDialog
+          open={importDialogOpen}
+          onOpenChange={setImportDialogOpen}
+          config={importConfig}
+        />
       </div>
     </div>
   );

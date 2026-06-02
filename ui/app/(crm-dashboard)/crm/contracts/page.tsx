@@ -3,7 +3,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Loader2, ChevronLeft, ChevronRight, Search, Plus, FileText, Calendar, DollarSign } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight, Search, Plus, FileText, Calendar, DollarSign, FileUp } from "lucide-react";
+import { ExcelImportDialog, ExcelImportConfig } from "@/components/excel-import-dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,6 +61,7 @@ export default function ContractsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingContract, setEditingContract] = useState<Contract | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   // Form state
   const [formContractNumber, setFormContractNumber] = useState("");
@@ -249,6 +251,101 @@ export default function ContractsPage() {
     }).format(value);
   };
 
+  const importConfig: ExcelImportConfig<Partial<Contract>> = {
+    title: "Import Contracts",
+    description: "Upload an Excel file to bulk import contracts into the system.",
+    columns: [
+      { excelColumn: "Contract Number", fieldName: "contractNumber", required: true },
+      { excelColumn: "Title", fieldName: "title", required: true },
+      { excelColumn: "Description", fieldName: "description" },
+      {
+        excelColumn: "Type",
+        fieldName: "type",
+        transform: (v) => {
+          const val = String(v).toLowerCase().replace(/\s+/g, "_");
+          if (["purchase", "sales", "service", "maintenance", "subscription", "nda", "partnership"].includes(val)) return val;
+          return "service";
+        },
+      },
+      { excelColumn: "Start Date", fieldName: "startDate", required: true },
+      { excelColumn: "End Date", fieldName: "endDate" },
+      {
+        excelColumn: "Auto Renew",
+        fieldName: "autoRenew",
+        transform: (v) => {
+          const val = String(v).toLowerCase();
+          return val === "true" || val === "yes" || val === "1";
+        },
+      },
+      {
+        excelColumn: "Total Value",
+        fieldName: "totalValue",
+        transform: (v) => {
+          const num = parseFloat(String(v));
+          return isNaN(num) ? undefined : num;
+        },
+      },
+      { excelColumn: "Currency", fieldName: "currency" },
+      {
+        excelColumn: "Status",
+        fieldName: "status",
+        transform: (v) => {
+          const val = String(v).toLowerCase().replace(/\s+/g, "_");
+          if (["draft", "pending_approval", "active", "expired", "cancelled"].includes(val)) return val;
+          return "draft";
+        },
+      },
+    ],
+    sampleData: [
+      { "Contract Number": "CTR-001", Title: "Annual Service Agreement", Description: "Annual maintenance contract", Type: "service", "Start Date": "2025-01-01", "End Date": "2025-12-31", "Auto Renew": "yes", "Total Value": 50000, Currency: "USD", Status: "active" },
+      { "Contract Number": "CTR-002", Title: "Software License", Description: "Enterprise license agreement", Type: "subscription", "Start Date": "2025-02-01", "End Date": "2026-01-31", "Auto Renew": "no", "Total Value": 25000, Currency: "USD", Status: "draft" },
+    ],
+    validateRow: (row) => {
+      if (!row.contractNumber || String(row.contractNumber).trim() === "") {
+        return { valid: false, error: "Contract Number is required" };
+      }
+      if (!row.title || String(row.title).trim() === "") {
+        return { valid: false, error: "Title is required" };
+      }
+      if (!row.startDate) {
+        return { valid: false, error: "Start Date is required" };
+      }
+      return { valid: true };
+    },
+    onImport: async (items) => {
+      let success = 0;
+      let failed = 0;
+      const errors: string[] = [];
+
+      for (const item of items) {
+        try {
+          await createContract({
+            contractNumber: String(item.contractNumber).trim(),
+            title: String(item.title).trim(),
+            description: item.description ? String(item.description).trim() : undefined,
+            type: (item.type as Contract["type"]) || "service",
+            startDate: String(item.startDate),
+            endDate: item.endDate ? String(item.endDate) : undefined,
+            autoRenew: Boolean(item.autoRenew),
+            totalValue: item.totalValue as number | undefined,
+            currency: item.currency ? String(item.currency).trim() : "USD",
+            status: (item.status as Contract["status"]) || "draft",
+          });
+          success++;
+        } catch (err) {
+          failed++;
+          errors.push(`Failed to import "${item.title}": ${err instanceof Error ? err.message : "Unknown error"}`);
+        }
+      }
+
+      if (success > 0) {
+        loadContracts();
+      }
+
+      return { success, failed, errors: errors.length > 0 ? errors : undefined };
+    },
+  };
+
   return (
     <div className="p-4 md:p-6">
       <div className="flex flex-col gap-6">
@@ -262,10 +359,16 @@ export default function ContractsPage() {
               {t("crm.contracts.description")} ({totalElements} total)
             </p>
           </div>
-          <Button onClick={() => handleOpenDialog()} size="sm">
-            <Plus className="h-4 w-4" />
-            {t("crm.contracts.addContract")}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setImportDialogOpen(true)} size="sm">
+              <FileUp className="h-4 w-4" />
+              Import Excel
+            </Button>
+            <Button onClick={() => handleOpenDialog()} size="sm">
+              <Plus className="h-4 w-4" />
+              {t("crm.contracts.addContract")}
+            </Button>
+          </div>
         </div>
 
         {/* Filters */}
@@ -597,6 +700,13 @@ export default function ContractsPage() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Excel Import Dialog */}
+        <ExcelImportDialog
+          open={importDialogOpen}
+          onOpenChange={setImportDialogOpen}
+          config={importConfig}
+        />
       </div>
     </div>
   );

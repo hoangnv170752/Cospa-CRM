@@ -45,7 +45,9 @@ import {
   Edit,
   Trash2,
   MoreHorizontal,
+  FileUp,
 } from "lucide-react";
+import { ExcelImportDialog, ExcelImportConfig } from "@/components/excel-import-dialog";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -102,6 +104,7 @@ export default function ProductsPage() {
   const [showDialog, setShowDialog] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   // Form state
   const [formData, setFormData] = useState<{
@@ -264,6 +267,94 @@ export default function ProductsPage() {
     }).format(price);
   };
 
+  const createProduct = async (data: Partial<Product>) => {
+    const response = await fetch(`${CRM_API_URL}/items`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify(data),
+    });
+    if (!response.ok) {
+      const error = await response.json();
+      throw new Error(error.error || "Failed to create product");
+    }
+    return response.json();
+  };
+
+  const importConfig: ExcelImportConfig<Partial<Product>> = {
+    title: "Import Products",
+    description: "Upload an Excel file to bulk import products into the catalog.",
+    columns: [
+      { excelColumn: "Name", fieldName: "name", required: true },
+      { excelColumn: "SKU", fieldName: "sku", required: true },
+      { excelColumn: "Description", fieldName: "description" },
+      { excelColumn: "Category", fieldName: "category" },
+      {
+        excelColumn: "Unit Price",
+        fieldName: "unitPrice",
+        required: true,
+        transform: (v) => parseFloat(String(v)) || 0,
+      },
+      { excelColumn: "Currency", fieldName: "currency" },
+      {
+        excelColumn: "Status",
+        fieldName: "status",
+        transform: (v) => {
+          const val = String(v).toLowerCase();
+          if (["draft", "active", "discontinued", "archived"].includes(val)) return val;
+          return "active";
+        },
+      },
+    ],
+    sampleData: [
+      { Name: "Product A", SKU: "SKU-001", Description: "Sample product", Category: "Hardware", "Unit Price": 99.99, Currency: "USD", Status: "active" },
+      { Name: "Product B", SKU: "SKU-002", Description: "Another product", Category: "Software", "Unit Price": 49.99, Currency: "USD", Status: "active" },
+    ],
+    validateRow: (row) => {
+      if (!row.name || String(row.name).trim() === "") {
+        return { valid: false, error: "Name is required" };
+      }
+      if (!row.sku || String(row.sku).trim() === "") {
+        return { valid: false, error: "SKU is required" };
+      }
+      if (row.unitPrice === undefined || row.unitPrice === null) {
+        return { valid: false, error: "Unit Price is required" };
+      }
+      return { valid: true };
+    },
+    onImport: async (items) => {
+      let success = 0;
+      let failed = 0;
+      const errors: string[] = [];
+
+      for (const item of items) {
+        try {
+          await createProduct({
+            name: String(item.name).trim(),
+            sku: String(item.sku).trim(),
+            description: item.description ? String(item.description).trim() : undefined,
+            category: item.category ? String(item.category).trim() : undefined,
+            unitPrice: Number(item.unitPrice),
+            currency: item.currency ? String(item.currency).trim() : "USD",
+            status: (item.status as Product["status"]) || "active",
+          });
+          success++;
+        } catch (err) {
+          failed++;
+          errors.push(`Failed to import "${item.name}": ${err instanceof Error ? err.message : "Unknown error"}`);
+        }
+      }
+
+      if (success > 0) {
+        fetchProducts();
+      }
+
+      return { success, failed, errors: errors.length > 0 ? errors : undefined };
+    },
+  };
+
   return (
     <div className="p-6 space-y-6">
       {/* Header */}
@@ -274,10 +365,16 @@ export default function ProductsPage() {
             Manage your product catalog and inventory
           </p>
         </div>
-        <Button onClick={openCreateDialog}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Product
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="outline" onClick={() => setImportDialogOpen(true)}>
+            <FileUp className="h-4 w-4 mr-2" />
+            Import Excel
+          </Button>
+          <Button onClick={openCreateDialog}>
+            <Plus className="h-4 w-4 mr-2" />
+            Add Product
+          </Button>
+        </div>
       </div>
 
       {/* Filters */}
@@ -571,6 +668,13 @@ export default function ProductsPage() {
           </form>
         </DialogContent>
       </Dialog>
+
+      {/* Excel Import Dialog */}
+      <ExcelImportDialog
+        open={importDialogOpen}
+        onOpenChange={setImportDialogOpen}
+        config={importConfig}
+      />
     </div>
   );
 }

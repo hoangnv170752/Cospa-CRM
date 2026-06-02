@@ -24,10 +24,16 @@ export async function authenticate(
 }
 
 // Role-based access control
+// sys_admin always has full access to all resources
 export function requireRole(...allowedRoles: UserRole[]) {
   return async (request: FastifyRequest, reply: FastifyReply) => {
     if (!request.user) {
       return reply.status(401).send({ error: 'Unauthorized' });
+    }
+
+    // SysAdmin bypasses all role checks - they have full platform access
+    if (request.user.role === 'sys_admin') {
+      return;
     }
 
     if (!allowedRoles.includes(request.user.role)) {

@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import Fastify from 'fastify';
 import cors from '@fastify/cors';
+import multipart from '@fastify/multipart';
 import swagger from '@fastify/swagger';
 import swaggerUi from '@fastify/swagger-ui';
 import rateLimit from '@fastify/rate-limit';
@@ -45,6 +46,14 @@ async function bootstrap() {
   // Register plugins
   await fastify.register(cors, {
     origin: true,
+  });
+
+  // Multipart for file uploads
+  await fastify.register(multipart, {
+    limits: {
+      fileSize: 5 * 1024 * 1024, // 5MB max file size
+      files: 1, // Max 1 file per request
+    },
   });
 
   // Rate limiting

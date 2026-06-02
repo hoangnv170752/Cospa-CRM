@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Loader2, ChevronLeft, ChevronRight, Search, Plus, HandCoins, DollarSign, Building2, Users } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight, Search, Plus, HandCoins, DollarSign, Building2, Users, FileUp } from "lucide-react";
+import { ExcelImportDialog, ExcelImportConfig } from "@/components/excel-import-dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -60,6 +61,7 @@ export default function DealsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingDeal, setEditingDeal] = useState<Deal | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   // Form state
   const [formTitle, setFormTitle] = useState("");
@@ -232,6 +234,82 @@ export default function DealsPage() {
     });
   };
 
+  const importConfig: ExcelImportConfig<Partial<Deal>> = {
+    title: "Import Deals",
+    description: "Upload an Excel file to bulk import deals into your pipeline.",
+    columns: [
+      { excelColumn: "Title", fieldName: "title", required: true },
+      {
+        excelColumn: "Value",
+        fieldName: "value",
+        required: true,
+        transform: (v) => parseFloat(String(v)) || 0,
+      },
+      { excelColumn: "Currency", fieldName: "currency" },
+      {
+        excelColumn: "Stage",
+        fieldName: "stage",
+        transform: (v) => {
+          const val = String(v).toLowerCase().replace(/\s+/g, "_");
+          if (["lead", "qualified", "proposal", "negotiation", "closed_won", "closed_lost"].includes(val)) return val;
+          return "lead";
+        },
+      },
+      {
+        excelColumn: "Probability",
+        fieldName: "probability",
+        transform: (v) => {
+          const num = parseFloat(String(v));
+          return isNaN(num) ? undefined : num;
+        },
+      },
+      { excelColumn: "Expected Close Date", fieldName: "expectedCloseDate" },
+      { excelColumn: "Notes", fieldName: "notes" },
+    ],
+    sampleData: [
+      { Title: "Enterprise Deal", Value: 50000, Currency: "USD", Stage: "proposal", Probability: 60, "Expected Close Date": "2025-03-01", Notes: "" },
+      { Title: "SMB License", Value: 5000, Currency: "USD", Stage: "qualified", Probability: 40, "Expected Close Date": "2025-02-15", Notes: "" },
+    ],
+    validateRow: (row) => {
+      if (!row.title || String(row.title).trim() === "") {
+        return { valid: false, error: "Title is required" };
+      }
+      if (row.value === undefined || row.value === null) {
+        return { valid: false, error: "Value is required" };
+      }
+      return { valid: true };
+    },
+    onImport: async (items) => {
+      let success = 0;
+      let failed = 0;
+      const errors: string[] = [];
+
+      for (const item of items) {
+        try {
+          await createDeal({
+            title: String(item.title).trim(),
+            value: Number(item.value),
+            currency: item.currency ? String(item.currency).trim() : "USD",
+            stage: (item.stage as Deal["stage"]) || "lead",
+            probability: item.probability as number | undefined,
+            expectedCloseDate: item.expectedCloseDate ? String(item.expectedCloseDate) : undefined,
+            notes: item.notes ? String(item.notes).trim() : undefined,
+          });
+          success++;
+        } catch (err) {
+          failed++;
+          errors.push(`Failed to import "${item.title}": ${err instanceof Error ? err.message : "Unknown error"}`);
+        }
+      }
+
+      if (success > 0) {
+        loadDeals();
+      }
+
+      return { success, failed, errors: errors.length > 0 ? errors : undefined };
+    },
+  };
+
   return (
     <div className="p-4 md:p-6">
       <div className="flex flex-col gap-6">
@@ -245,10 +323,16 @@ export default function DealsPage() {
               {t("crm.deals.description")} ({totalElements} total)
             </p>
           </div>
-          <Button onClick={() => handleOpenDialog()} size="sm">
-            <Plus className="h-4 w-4" />
-            {t("crm.deals.addDeal")}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setImportDialogOpen(true)} size="sm">
+              <FileUp className="h-4 w-4" />
+              Import Excel
+            </Button>
+            <Button onClick={() => handleOpenDialog()} size="sm">
+              <Plus className="h-4 w-4" />
+              {t("crm.deals.addDeal")}
+            </Button>
+          </div>
         </div>
 
         {/* Filters */}
@@ -557,6 +641,13 @@ export default function DealsPage() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Excel Import Dialog */}
+        <ExcelImportDialog
+          open={importDialogOpen}
+          onOpenChange={setImportDialogOpen}
+          config={importConfig}
+        />
       </div>
     </div>
   );

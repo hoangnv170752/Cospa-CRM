@@ -2,7 +2,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Loader2, ChevronLeft, ChevronRight, Search, Plus, Users, Mail, Phone, Building2 } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight, Search, Plus, Users, Mail, Phone, Building2, FileUp } from "lucide-react";
+import { ExcelImportDialog, ExcelImportConfig } from "@/components/excel-import-dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -49,6 +50,7 @@ export default function ContactsPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [importDialogOpen, setImportDialogOpen] = useState(false);
 
   // Form state
   const [formFirstName, setFormFirstName] = useState("");
@@ -198,6 +200,63 @@ export default function ContactsPage() {
     });
   };
 
+  const importConfig: ExcelImportConfig<Partial<Contact>> = {
+    title: "Import Contacts",
+    description: "Upload an Excel file to bulk import contacts into the CRM.",
+    columns: [
+      { excelColumn: "First Name", fieldName: "firstName", required: true },
+      { excelColumn: "Last Name", fieldName: "lastName", required: true },
+      { excelColumn: "Email", fieldName: "email", required: true },
+      { excelColumn: "Phone", fieldName: "phone" },
+      { excelColumn: "Position", fieldName: "position" },
+      { excelColumn: "Notes", fieldName: "notes" },
+    ],
+    sampleData: [
+      { "First Name": "John", "Last Name": "Doe", Email: "john.doe@example.com", Phone: "+1 555-0123", Position: "Manager", Notes: "" },
+      { "First Name": "Jane", "Last Name": "Smith", Email: "jane.smith@example.com", Phone: "+1 555-0456", Position: "Developer", Notes: "" },
+    ],
+    validateRow: (row) => {
+      if (!row.firstName || String(row.firstName).trim() === "") {
+        return { valid: false, error: "First Name is required" };
+      }
+      if (!row.lastName || String(row.lastName).trim() === "") {
+        return { valid: false, error: "Last Name is required" };
+      }
+      if (!row.email || String(row.email).trim() === "") {
+        return { valid: false, error: "Email is required" };
+      }
+      return { valid: true };
+    },
+    onImport: async (items) => {
+      let success = 0;
+      let failed = 0;
+      const errors: string[] = [];
+
+      for (const item of items) {
+        try {
+          await createContact({
+            firstName: String(item.firstName).trim(),
+            lastName: String(item.lastName).trim(),
+            email: String(item.email).trim(),
+            phone: item.phone ? String(item.phone).trim() : undefined,
+            position: item.position ? String(item.position).trim() : undefined,
+            notes: item.notes ? String(item.notes).trim() : undefined,
+          });
+          success++;
+        } catch (err) {
+          failed++;
+          errors.push(`Failed to import "${item.firstName} ${item.lastName}": ${err instanceof Error ? err.message : "Unknown error"}`);
+        }
+      }
+
+      if (success > 0) {
+        loadContacts();
+      }
+
+      return { success, failed, errors: errors.length > 0 ? errors : undefined };
+    },
+  };
+
   return (
     <div className="p-4 md:p-6">
       <div className="flex flex-col gap-6">
@@ -211,10 +270,16 @@ export default function ContactsPage() {
               {t("crm.contacts.description")} ({totalElements} total)
             </p>
           </div>
-          <Button onClick={() => handleOpenDialog()} size="sm">
-            <Plus className="h-4 w-4" />
-            {t("crm.contacts.addContact")}
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={() => setImportDialogOpen(true)} size="sm">
+              <FileUp className="h-4 w-4" />
+              Import Excel
+            </Button>
+            <Button onClick={() => handleOpenDialog()} size="sm">
+              <Plus className="h-4 w-4" />
+              {t("crm.contacts.addContact")}
+            </Button>
+          </div>
         </div>
 
         {/* Search */}
@@ -468,6 +533,13 @@ export default function ContactsPage() {
             </div>
           </DialogContent>
         </Dialog>
+
+        {/* Excel Import Dialog */}
+        <ExcelImportDialog
+          open={importDialogOpen}
+          onOpenChange={setImportDialogOpen}
+          config={importConfig}
+        />
       </div>
     </div>
   );

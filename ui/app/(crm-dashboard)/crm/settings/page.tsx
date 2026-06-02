@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
+import Image from "next/image";
 import { useCrmAuth } from "@/contexts/crm-auth-context";
 import { crmFetch } from "@/lib/crm";
 import {
@@ -12,6 +13,8 @@ import {
   Eye,
   EyeOff,
   Save,
+  Camera,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -23,6 +26,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { toast } from "sonner";
 
 interface Plan {
   id: string;
@@ -102,6 +106,10 @@ export default function SettingsPage() {
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [passwordError, setPasswordError] = useState<string | null>(null);
 
+  // Avatar state
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
+
   useEffect(() => {
     async function loadProfile() {
       try {
@@ -139,6 +147,90 @@ export default function SettingsPage() {
       setError("Failed to update profile");
     } finally {
       setIsSaving(false);
+    }
+  };
+
+  const handleAvatarUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !profile) return;
+
+    // Validate file type
+    const allowedTypes = ["image/jpeg", "image/png", "image/webp", "image/gif"];
+    if (!allowedTypes.includes(file.type)) {
+      toast.error("Invalid file type. Only JPG, PNG, WebP, and GIF are allowed.");
+      return;
+    }
+
+    // Validate file size (5MB max)
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("File too large. Maximum size is 5MB.");
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const CRM_API_URL = process.env.NEXT_PUBLIC_CRM_API_URL || "http://localhost:5001/api";
+      const token = localStorage.getItem("crm_token");
+
+      const response = await fetch(`${CRM_API_URL}/users/${profile.id}/avatar`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Upload failed");
+      }
+
+      const data = await response.json();
+      setProfile({ ...profile, avatar: data.avatar });
+      toast.success("Avatar updated successfully");
+    } catch (err) {
+      console.error("Avatar upload failed:", err);
+      toast.error(err instanceof Error ? err.message : "Failed to upload avatar");
+    } finally {
+      setIsUploadingAvatar(false);
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
+
+  const handleRemoveAvatar = async () => {
+    if (!profile?.avatar) return;
+
+    setIsUploadingAvatar(true);
+
+    try {
+      const CRM_API_URL = process.env.NEXT_PUBLIC_CRM_API_URL || "http://localhost:5001/api";
+      const token = localStorage.getItem("crm_token");
+
+      const response = await fetch(`${CRM_API_URL}/users/${profile.id}/avatar`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Failed to remove avatar");
+      }
+
+      setProfile({ ...profile, avatar: null });
+      toast.success("Avatar removed");
+    } catch (err) {
+      console.error("Avatar removal failed:", err);
+      toast.error(err instanceof Error ? err.message : "Failed to remove avatar");
+    } finally {
+      setIsUploadingAvatar(false);
     }
   };
 
@@ -229,6 +321,62 @@ export default function SettingsPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="px-4 pb-3 space-y-2">
+              {/* Avatar Section */}
+              <div className="flex items-center gap-3 pb-2">
+                <div className="relative">
+                  <div className="w-16 h-16 rounded-full overflow-hidden bg-muted flex items-center justify-center border-2 border-border">
+                    {profile?.avatar ? (
+                      <Image
+                        src={profile.avatar}
+                        alt="Avatar"
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <User className="h-8 w-8 text-muted-foreground" />
+                    )}
+                  </div>
+                  {isUploadingAvatar && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-black/50 rounded-full">
+                      <Loader2 className="h-5 w-5 animate-spin text-white" />
+                    </div>
+                  )}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp,image/gif"
+                    onChange={handleAvatarUpload}
+                    className="hidden"
+                    id="avatar-upload"
+                  />
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="h-6 text-[10px] px-2"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploadingAvatar}
+                  >
+                    <Camera className="h-3 w-3 mr-1" />
+                    Upload Photo
+                  </Button>
+                  {profile?.avatar && (
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-6 text-[10px] px-2 text-destructive hover:text-destructive"
+                      onClick={handleRemoveAvatar}
+                      disabled={isUploadingAvatar}
+                    >
+                      <Trash2 className="h-3 w-3 mr-1" />
+                      Remove
+                    </Button>
+                  )}
+                </div>
+              </div>
+
               <div className="grid grid-cols-2 gap-2">
                 <div>
                   <Label className="text-[10px] text-muted-foreground">First Name</Label>

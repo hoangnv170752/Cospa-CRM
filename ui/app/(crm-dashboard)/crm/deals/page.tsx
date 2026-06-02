@@ -234,20 +234,20 @@ export default function DealsPage() {
     });
   };
 
+  const tImport = t.raw("crm.import.columns");
   const importConfig: ExcelImportConfig<Partial<Deal>> = {
-    title: "Import Deals",
-    description: "Upload an Excel file to bulk import deals into your pipeline.",
+    entityType: "deals",
     columns: [
-      { excelColumn: "Title", fieldName: "title", required: true },
+      { excelColumn: tImport.title, fieldName: "title", required: true },
       {
-        excelColumn: "Value",
+        excelColumn: tImport.value,
         fieldName: "value",
         required: true,
         transform: (v) => parseFloat(String(v)) || 0,
       },
       { excelColumn: "Currency", fieldName: "currency" },
       {
-        excelColumn: "Stage",
+        excelColumn: tImport.stage,
         fieldName: "stage",
         transform: (v) => {
           const val = String(v).toLowerCase().replace(/\s+/g, "_");
@@ -256,26 +256,26 @@ export default function DealsPage() {
         },
       },
       {
-        excelColumn: "Probability",
+        excelColumn: tImport.probability,
         fieldName: "probability",
         transform: (v) => {
           const num = parseFloat(String(v));
           return isNaN(num) ? undefined : num;
         },
       },
-      { excelColumn: "Expected Close Date", fieldName: "expectedCloseDate" },
-      { excelColumn: "Notes", fieldName: "notes" },
+      { excelColumn: tImport.expectedCloseDate, fieldName: "expectedCloseDate" },
+      { excelColumn: tImport.notes, fieldName: "notes" },
     ],
     sampleData: [
-      { Title: "Enterprise Deal", Value: 50000, Currency: "USD", Stage: "proposal", Probability: 60, "Expected Close Date": "2025-03-01", Notes: "" },
-      { Title: "SMB License", Value: 5000, Currency: "USD", Stage: "qualified", Probability: 40, "Expected Close Date": "2025-02-15", Notes: "" },
+      { [tImport.title]: "Enterprise Deal", [tImport.value]: 50000, Currency: "USD", [tImport.stage]: "proposal", [tImport.probability]: 60, [tImport.expectedCloseDate]: "2025-03-01", [tImport.notes]: "" },
+      { [tImport.title]: "SMB License", [tImport.value]: 5000, Currency: "USD", [tImport.stage]: "qualified", [tImport.probability]: 40, [tImport.expectedCloseDate]: "2025-02-15", [tImport.notes]: "" },
     ],
     validateRow: (row) => {
       if (!row.title || String(row.title).trim() === "") {
-        return { valid: false, error: "Title is required" };
+        return { valid: false, error: tImport.title + " is required" };
       }
       if (row.value === undefined || row.value === null) {
-        return { valid: false, error: "Value is required" };
+        return { valid: false, error: tImport.value + " is required" };
       }
       return { valid: true };
     },
@@ -326,7 +326,7 @@ export default function DealsPage() {
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => setImportDialogOpen(true)} size="sm">
               <FileUp className="h-4 w-4" />
-              Import Excel
+              {t("crm.import.button")}
             </Button>
             <Button onClick={() => handleOpenDialog()} size="sm">
               <Plus className="h-4 w-4" />

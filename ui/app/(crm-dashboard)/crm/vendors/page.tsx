@@ -228,14 +228,14 @@ export default function VendorsPage() {
     );
   };
 
+  const tImport = t.raw("crm.import.columns");
   const importConfig: ExcelImportConfig<Partial<Vendor>> = {
-    title: "Import Vendors",
-    description: "Upload an Excel file to bulk import vendors into the system.",
+    entityType: "vendors",
     columns: [
-      { excelColumn: "Name", fieldName: "name", required: true },
-      { excelColumn: "Code", fieldName: "code", required: true },
+      { excelColumn: tImport.name, fieldName: "name", required: true },
+      { excelColumn: tImport.code, fieldName: "code", required: true },
       {
-        excelColumn: "Type",
+        excelColumn: tImport.type,
         fieldName: "type",
         transform: (v) => {
           const val = String(v).toLowerCase().replace(/\s+/g, "_");
@@ -243,15 +243,15 @@ export default function VendorsPage() {
           return "supplier";
         },
       },
-      { excelColumn: "Email", fieldName: "email" },
-      { excelColumn: "Phone", fieldName: "phone" },
-      { excelColumn: "Website", fieldName: "website" },
-      { excelColumn: "Address", fieldName: "address" },
+      { excelColumn: tImport.email, fieldName: "email" },
+      { excelColumn: tImport.phone, fieldName: "phone" },
+      { excelColumn: tImport.website, fieldName: "website" },
+      { excelColumn: tImport.address, fieldName: "address" },
       { excelColumn: "City", fieldName: "city" },
-      { excelColumn: "Country", fieldName: "country" },
+      { excelColumn: tImport.country, fieldName: "country" },
       { excelColumn: "Currency", fieldName: "currency" },
       {
-        excelColumn: "Status",
+        excelColumn: tImport.status,
         fieldName: "status",
         transform: (v) => {
           const val = String(v).toLowerCase();
@@ -259,18 +259,18 @@ export default function VendorsPage() {
           return "pending";
         },
       },
-      { excelColumn: "Notes", fieldName: "notes" },
+      { excelColumn: tImport.notes, fieldName: "notes" },
     ],
     sampleData: [
-      { Name: "Acme Supplies", Code: "ACM-001", Type: "supplier", Email: "contact@acme.com", Phone: "+1 555-0123", Website: "https://acme.com", Address: "123 Main St", City: "New York", Country: "USA", Currency: "USD", Status: "active", Notes: "" },
-      { Name: "Tech Parts Inc", Code: "TPI-001", Type: "manufacturer", Email: "sales@techparts.com", Phone: "+1 555-0456", Website: "https://techparts.com", Address: "456 Oak Ave", City: "Boston", Country: "USA", Currency: "USD", Status: "pending", Notes: "" },
+      { [tImport.name]: "Acme Supplies", [tImport.code]: "ACM-001", [tImport.type]: "supplier", [tImport.email]: "contact@acme.com", [tImport.phone]: "+1 555-0123", [tImport.website]: "https://acme.com", [tImport.address]: "123 Main St", City: "New York", [tImport.country]: "USA", Currency: "USD", [tImport.status]: "active", [tImport.notes]: "" },
+      { [tImport.name]: "Tech Parts Inc", [tImport.code]: "TPI-001", [tImport.type]: "manufacturer", [tImport.email]: "sales@techparts.com", [tImport.phone]: "+1 555-0456", [tImport.website]: "https://techparts.com", [tImport.address]: "456 Oak Ave", City: "Boston", [tImport.country]: "USA", Currency: "USD", [tImport.status]: "pending", [tImport.notes]: "" },
     ],
     validateRow: (row) => {
       if (!row.name || String(row.name).trim() === "") {
-        return { valid: false, error: "Name is required" };
+        return { valid: false, error: tImport.name + " is required" };
       }
       if (!row.code || String(row.code).trim() === "") {
-        return { valid: false, error: "Code is required" };
+        return { valid: false, error: tImport.code + " is required" };
       }
       return { valid: true };
     },
@@ -326,7 +326,7 @@ export default function VendorsPage() {
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => setImportDialogOpen(true)} size="sm">
               <FileUp className="h-4 w-4" />
-              Import Excel
+              {t("crm.import.button")}
             </Button>
             <Button onClick={() => handleOpenDialog()} size="sm">
               <Plus className="h-4 w-4" />

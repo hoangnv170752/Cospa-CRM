@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -31,8 +32,7 @@ export interface ColumnMapping {
 }
 
 export interface ExcelImportConfig<T> {
-  title: string;
-  description: string;
+  entityType: "companies" | "contacts" | "products" | "deals" | "vendors" | "contracts";
   columns: ColumnMapping[];
   validateRow?: (row: T) => { valid: boolean; error?: string };
   onImport: (items: T[]) => Promise<{ success: number; failed: number; errors?: string[] }>;
@@ -59,6 +59,7 @@ export function ExcelImportDialog<T extends Record<string, unknown>>({
   onOpenChange,
   config,
 }: ExcelImportDialogProps<T>) {
+  const t = useTranslations("crm.import");
   const [status, setStatus] = useState<ImportStatus>("idle");
   const [parsedRows, setParsedRows] = useState<ParsedRow<T>[]>([]);
   const [importResult, setImportResult] = useState<{
@@ -68,6 +69,8 @@ export function ExcelImportDialog<T extends Record<string, unknown>>({
   } | null>(null);
   const [error, setError] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const entityName = t(`entities.${config.entityType}`);
 
   const resetState = () => {
     setStatus("idle");
@@ -226,7 +229,7 @@ export function ExcelImportDialog<T extends Record<string, unknown>>({
     const worksheet = XLSX.utils.json_to_sheet(sampleData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, "Data");
-    XLSX.writeFile(workbook, `${config.title.toLowerCase().replace(/\s+/g, "-")}-template.xlsx`);
+    XLSX.writeFile(workbook, `${config.entityType}-template.xlsx`);
   };
 
   const validCount = parsedRows.filter((r) => r.valid).length;
@@ -238,9 +241,9 @@ export function ExcelImportDialog<T extends Record<string, unknown>>({
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
             <FileSpreadsheet className="h-5 w-5" />
-            {config.title}
+            {t("title", { entity: entityName })}
           </DialogTitle>
-          <DialogDescription>{config.description}</DialogDescription>
+          <DialogDescription>{t("description", { entity: entityName.toLowerCase() })}</DialogDescription>
         </DialogHeader>
 
         <div className="flex-1 overflow-hidden">
@@ -248,8 +251,11 @@ export function ExcelImportDialog<T extends Record<string, unknown>>({
             <div className="flex flex-col items-center justify-center py-8 gap-4">
               <div className="border-2 border-dashed border-muted-foreground/25 rounded-lg p-8 text-center w-full">
                 <Upload className="h-10 w-10 mx-auto mb-4 text-muted-foreground" />
-                <p className="text-sm text-muted-foreground mb-4">
-                  Upload an Excel file (.xlsx, .xls) or CSV file
+                <p className="text-sm text-muted-foreground mb-2">
+                  {t("dropzone")}
+                </p>
+                <p className="text-xs text-muted-foreground mb-4">
+                  {t("supportedFormats")}
                 </p>
                 <input
                   ref={fileInputRef}
@@ -260,23 +266,23 @@ export function ExcelImportDialog<T extends Record<string, unknown>>({
                 />
                 <Button onClick={() => fileInputRef.current?.click()}>
                   <Upload className="h-4 w-4 mr-2" />
-                  Select File
+                  {t("button")}
                 </Button>
               </div>
 
-              <div className="flex items-center gap-4 text-sm text-muted-foreground">
-                <span>Expected columns:</span>
+              <div className="flex items-center gap-4 text-sm text-muted-foreground flex-wrap justify-center">
+                <span>{t("columnMapping")}:</span>
                 {config.columns.map((col) => (
                   <Badge key={col.fieldName} variant={col.required ? "default" : "secondary"}>
                     {col.excelColumn}
-                    {col.required && " *"}
+                    {col.required && ` (${t("required")})`}
                   </Badge>
                 ))}
               </div>
 
               <Button variant="outline" size="sm" onClick={downloadSampleFile}>
                 <Download className="h-4 w-4 mr-2" />
-                Download Template
+                {t("downloadTemplate")}
               </Button>
 
               {error && (
@@ -291,7 +297,7 @@ export function ExcelImportDialog<T extends Record<string, unknown>>({
           {status === "parsing" && (
             <div className="flex flex-col items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
-              <p className="text-sm text-muted-foreground">Parsing file...</p>
+              <p className="text-sm text-muted-foreground">{t("importing")}...</p>
             </div>
           )}
 
@@ -300,12 +306,12 @@ export function ExcelImportDialog<T extends Record<string, unknown>>({
               <div className="flex items-center gap-4">
                 <Badge variant="default" className="bg-green-600">
                   <CheckCircle2 className="h-3 w-3 mr-1" />
-                  {validCount} valid
+                  {validCount} {t("rows")}
                 </Badge>
                 {invalidCount > 0 && (
                   <Badge variant="destructive">
                     <AlertCircle className="h-3 w-3 mr-1" />
-                    {invalidCount} invalid
+                    {invalidCount} {t("errors")}
                   </Badge>
                 )}
               </div>
@@ -314,8 +320,8 @@ export function ExcelImportDialog<T extends Record<string, unknown>>({
                 <Table>
                   <TableHeader>
                     <TableRow>
-                      <TableHead className="w-[60px]">Row</TableHead>
-                      <TableHead className="w-[80px]">Status</TableHead>
+                      <TableHead className="w-[60px]">#</TableHead>
+                      <TableHead className="w-[80px]">{t("preview")}</TableHead>
                       {config.columns.slice(0, 5).map((col) => (
                         <TableHead key={col.fieldName}>{col.excelColumn}</TableHead>
                       ))}
@@ -345,7 +351,7 @@ export function ExcelImportDialog<T extends Record<string, unknown>>({
 
               {parsedRows.length > 100 && (
                 <p className="text-xs text-muted-foreground text-center">
-                  Showing first 100 rows of {parsedRows.length} total
+                  {t("preview")} 100 / {parsedRows.length} {t("rows")}
                 </p>
               )}
 
@@ -362,7 +368,7 @@ export function ExcelImportDialog<T extends Record<string, unknown>>({
             <div className="flex flex-col items-center justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-primary mb-4" />
               <p className="text-sm text-muted-foreground">
-                Importing {validCount} items...
+                {t("importing")}
               </p>
             </div>
           )}
@@ -371,15 +377,17 @@ export function ExcelImportDialog<T extends Record<string, unknown>>({
             <div className="flex flex-col items-center justify-center py-8 gap-4">
               <CheckCircle2 className="h-12 w-12 text-green-600" />
               <div className="text-center">
-                <p className="font-medium text-lg">Import Complete</p>
-                <p className="text-sm text-muted-foreground">
-                  Successfully imported {importResult.success} items
-                  {importResult.failed > 0 && `, ${importResult.failed} failed`}
-                </p>
+                <p className="font-medium text-lg">{t("success", { count: importResult.success })}</p>
+                {importResult.failed > 0 && (
+                  <p className="text-sm text-destructive">
+                    {t("failed", { count: importResult.failed })}
+                  </p>
+                )}
               </div>
 
               {importResult.errors && importResult.errors.length > 0 && (
                 <ScrollArea className="h-[150px] w-full border rounded-lg p-3">
+                  <p className="text-xs font-medium mb-2">{t("errors")}:</p>
                   {importResult.errors.map((err, i) => (
                     <p key={i} className="text-xs text-destructive">
                       {err}
@@ -394,23 +402,23 @@ export function ExcelImportDialog<T extends Record<string, unknown>>({
         <DialogFooter>
           {status === "idle" && (
             <Button variant="outline" onClick={handleClose}>
-              Cancel
+              {t("cancel")}
             </Button>
           )}
 
           {status === "preview" && (
             <>
               <Button variant="outline" onClick={resetState}>
-                Select Another File
+                {t("cancel")}
               </Button>
               <Button onClick={handleImport} disabled={validCount === 0}>
-                Import {validCount} Items
+                {t("import")} ({validCount})
               </Button>
             </>
           )}
 
           {status === "complete" && (
-            <Button onClick={handleClose}>Done</Button>
+            <Button onClick={handleClose}>{t("cancel")}</Button>
           )}
         </DialogFooter>
       </DialogContent>

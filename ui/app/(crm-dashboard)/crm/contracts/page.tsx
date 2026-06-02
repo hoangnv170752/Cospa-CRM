@@ -251,15 +251,15 @@ export default function ContractsPage() {
     }).format(value);
   };
 
+  const tImport = t.raw("crm.import.columns");
   const importConfig: ExcelImportConfig<Partial<Contract>> = {
-    title: "Import Contracts",
-    description: "Upload an Excel file to bulk import contracts into the system.",
+    entityType: "contracts",
     columns: [
-      { excelColumn: "Contract Number", fieldName: "contractNumber", required: true },
-      { excelColumn: "Title", fieldName: "title", required: true },
-      { excelColumn: "Description", fieldName: "description" },
+      { excelColumn: tImport.contractNumber, fieldName: "contractNumber", required: true },
+      { excelColumn: tImport.title, fieldName: "title", required: true },
+      { excelColumn: tImport.description, fieldName: "description" },
       {
-        excelColumn: "Type",
+        excelColumn: tImport.type,
         fieldName: "type",
         transform: (v) => {
           const val = String(v).toLowerCase().replace(/\s+/g, "_");
@@ -267,8 +267,8 @@ export default function ContractsPage() {
           return "service";
         },
       },
-      { excelColumn: "Start Date", fieldName: "startDate", required: true },
-      { excelColumn: "End Date", fieldName: "endDate" },
+      { excelColumn: tImport.startDate, fieldName: "startDate", required: true },
+      { excelColumn: tImport.endDate, fieldName: "endDate" },
       {
         excelColumn: "Auto Renew",
         fieldName: "autoRenew",
@@ -278,7 +278,7 @@ export default function ContractsPage() {
         },
       },
       {
-        excelColumn: "Total Value",
+        excelColumn: tImport.value,
         fieldName: "totalValue",
         transform: (v) => {
           const num = parseFloat(String(v));
@@ -287,7 +287,7 @@ export default function ContractsPage() {
       },
       { excelColumn: "Currency", fieldName: "currency" },
       {
-        excelColumn: "Status",
+        excelColumn: tImport.status,
         fieldName: "status",
         transform: (v) => {
           const val = String(v).toLowerCase().replace(/\s+/g, "_");
@@ -297,18 +297,18 @@ export default function ContractsPage() {
       },
     ],
     sampleData: [
-      { "Contract Number": "CTR-001", Title: "Annual Service Agreement", Description: "Annual maintenance contract", Type: "service", "Start Date": "2025-01-01", "End Date": "2025-12-31", "Auto Renew": "yes", "Total Value": 50000, Currency: "USD", Status: "active" },
-      { "Contract Number": "CTR-002", Title: "Software License", Description: "Enterprise license agreement", Type: "subscription", "Start Date": "2025-02-01", "End Date": "2026-01-31", "Auto Renew": "no", "Total Value": 25000, Currency: "USD", Status: "draft" },
+      { [tImport.contractNumber]: "CTR-001", [tImport.title]: "Annual Service Agreement", [tImport.description]: "Annual maintenance contract", [tImport.type]: "service", [tImport.startDate]: "2025-01-01", [tImport.endDate]: "2025-12-31", "Auto Renew": "yes", [tImport.value]: 50000, Currency: "USD", [tImport.status]: "active" },
+      { [tImport.contractNumber]: "CTR-002", [tImport.title]: "Software License", [tImport.description]: "Enterprise license agreement", [tImport.type]: "subscription", [tImport.startDate]: "2025-02-01", [tImport.endDate]: "2026-01-31", "Auto Renew": "no", [tImport.value]: 25000, Currency: "USD", [tImport.status]: "draft" },
     ],
     validateRow: (row) => {
       if (!row.contractNumber || String(row.contractNumber).trim() === "") {
-        return { valid: false, error: "Contract Number is required" };
+        return { valid: false, error: tImport.contractNumber + " is required" };
       }
       if (!row.title || String(row.title).trim() === "") {
-        return { valid: false, error: "Title is required" };
+        return { valid: false, error: tImport.title + " is required" };
       }
       if (!row.startDate) {
-        return { valid: false, error: "Start Date is required" };
+        return { valid: false, error: tImport.startDate + " is required" };
       }
       return { valid: true };
     },
@@ -362,7 +362,7 @@ export default function ContractsPage() {
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => setImportDialogOpen(true)} size="sm">
               <FileUp className="h-4 w-4" />
-              Import Excel
+              {t("crm.import.button")}
             </Button>
             <Button onClick={() => handleOpenDialog()} size="sm">
               <Plus className="h-4 w-4" />

@@ -2,6 +2,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -93,6 +94,7 @@ const statusColors: Record<string, string> = {
 type ProductStatus = "draft" | "active" | "discontinued" | "archived";
 
 export default function ProductsPage() {
+  const t = useTranslations();
   const { token } = useCrmAuth();
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -283,23 +285,23 @@ export default function ProductsPage() {
     return response.json();
   };
 
+  const tImport = t.raw("crm.import.columns");
   const importConfig: ExcelImportConfig<Partial<Product>> = {
-    title: "Import Products",
-    description: "Upload an Excel file to bulk import products into the catalog.",
+    entityType: "products",
     columns: [
-      { excelColumn: "Name", fieldName: "name", required: true },
-      { excelColumn: "SKU", fieldName: "sku", required: true },
-      { excelColumn: "Description", fieldName: "description" },
-      { excelColumn: "Category", fieldName: "category" },
+      { excelColumn: tImport.name, fieldName: "name", required: true },
+      { excelColumn: tImport.sku, fieldName: "sku", required: true },
+      { excelColumn: tImport.description, fieldName: "description" },
+      { excelColumn: tImport.category, fieldName: "category" },
       {
-        excelColumn: "Unit Price",
+        excelColumn: tImport.unitPrice,
         fieldName: "unitPrice",
         required: true,
         transform: (v) => parseFloat(String(v)) || 0,
       },
       { excelColumn: "Currency", fieldName: "currency" },
       {
-        excelColumn: "Status",
+        excelColumn: tImport.status,
         fieldName: "status",
         transform: (v) => {
           const val = String(v).toLowerCase();
@@ -309,18 +311,18 @@ export default function ProductsPage() {
       },
     ],
     sampleData: [
-      { Name: "Product A", SKU: "SKU-001", Description: "Sample product", Category: "Hardware", "Unit Price": 99.99, Currency: "USD", Status: "active" },
-      { Name: "Product B", SKU: "SKU-002", Description: "Another product", Category: "Software", "Unit Price": 49.99, Currency: "USD", Status: "active" },
+      { [tImport.name]: "Product A", [tImport.sku]: "SKU-001", [tImport.description]: "Sample product", [tImport.category]: "Hardware", [tImport.unitPrice]: 99.99, Currency: "USD", [tImport.status]: "active" },
+      { [tImport.name]: "Product B", [tImport.sku]: "SKU-002", [tImport.description]: "Another product", [tImport.category]: "Software", [tImport.unitPrice]: 49.99, Currency: "USD", [tImport.status]: "active" },
     ],
     validateRow: (row) => {
       if (!row.name || String(row.name).trim() === "") {
-        return { valid: false, error: "Name is required" };
+        return { valid: false, error: tImport.name + " is required" };
       }
       if (!row.sku || String(row.sku).trim() === "") {
-        return { valid: false, error: "SKU is required" };
+        return { valid: false, error: tImport.sku + " is required" };
       }
       if (row.unitPrice === undefined || row.unitPrice === null) {
-        return { valid: false, error: "Unit Price is required" };
+        return { valid: false, error: tImport.unitPrice + " is required" };
       }
       return { valid: true };
     },
@@ -368,7 +370,7 @@ export default function ProductsPage() {
         <div className="flex items-center gap-2">
           <Button variant="outline" onClick={() => setImportDialogOpen(true)}>
             <FileUp className="h-4 w-4 mr-2" />
-            Import Excel
+            {t("crm.import.button")}
           </Button>
           <Button onClick={openCreateDialog}>
             <Plus className="h-4 w-4 mr-2" />

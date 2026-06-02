@@ -181,17 +181,17 @@ export default function CompaniesPage() {
     return t(`crm.companies.sizes.${size}`);
   };
 
+  const tImport = t.raw("crm.import.columns");
   const importConfig: ExcelImportConfig<Partial<Company>> = {
-    title: "Import Companies",
-    description: "Upload an Excel file to bulk import companies into the CRM.",
+    entityType: "companies",
     columns: [
-      { excelColumn: "Name", fieldName: "name", required: true },
-      { excelColumn: "Industry", fieldName: "industry" },
-      { excelColumn: "Website", fieldName: "website" },
-      { excelColumn: "Phone", fieldName: "phone" },
-      { excelColumn: "Address", fieldName: "address" },
+      { excelColumn: tImport.name, fieldName: "name", required: true },
+      { excelColumn: tImport.industry, fieldName: "industry" },
+      { excelColumn: tImport.website, fieldName: "website" },
+      { excelColumn: tImport.phone, fieldName: "phone" },
+      { excelColumn: tImport.address, fieldName: "address" },
       {
-        excelColumn: "Size",
+        excelColumn: tImport.size,
         fieldName: "size",
         transform: (v) => {
           const val = String(v).toLowerCase();
@@ -201,12 +201,12 @@ export default function CompaniesPage() {
       },
     ],
     sampleData: [
-      { Name: "Acme Corp", Industry: "Technology", Website: "https://acme.com", Phone: "+1 555-0123", Address: "123 Main St", Size: "medium" },
-      { Name: "Tech Solutions", Industry: "Software", Website: "https://techsol.com", Phone: "+1 555-0456", Address: "456 Oak Ave", Size: "large" },
+      { [tImport.name]: "Acme Corp", [tImport.industry]: "Technology", [tImport.website]: "https://acme.com", [tImport.phone]: "+1 555-0123", [tImport.address]: "123 Main St", [tImport.size]: "medium" },
+      { [tImport.name]: "Tech Solutions", [tImport.industry]: "Software", [tImport.website]: "https://techsol.com", [tImport.phone]: "+1 555-0456", [tImport.address]: "456 Oak Ave", [tImport.size]: "large" },
     ],
     validateRow: (row) => {
       if (!row.name || String(row.name).trim() === "") {
-        return { valid: false, error: "Name is required" };
+        return { valid: false, error: t("crm.import.columns.name") + " is required" };
       }
       return { valid: true };
     },
@@ -256,7 +256,7 @@ export default function CompaniesPage() {
           <div className="flex items-center gap-2">
             <Button variant="outline" onClick={() => setImportDialogOpen(true)} size="sm">
               <FileUp className="h-4 w-4" />
-              Import Excel
+              {t("crm.import.button")}
             </Button>
             <Button onClick={() => handleOpenDialog()} size="sm">
               <Plus className="h-4 w-4" />

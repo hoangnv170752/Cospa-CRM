@@ -316,8 +316,8 @@ Edit via `idf.py menuconfig` → IoT Dashboard Configuration:
 
 | Phase | Features | Target |
 |-------|----------|--------|
-| Phase 1 | Time-series charts, Real-time streaming, Notification system | Q3 2025 |
-| Phase 2 | AI Data Assistant, Anomaly detection, Feedback system | Q4 2025 |
+| Phase 1 | Time-series charts, Real-time streaming, Notification system | Q3 2026 |
+| Phase 2 | AI Data Assistant, Anomaly detection, Feedback system | Q4 2026 |
 | Phase 3 | Predictive maintenance, Custom dashboards, Bulk operations | Q1 2026 |
 | Phase 4 | RAG pipeline, AI agents, Advanced analytics | Q2 2026 |
 

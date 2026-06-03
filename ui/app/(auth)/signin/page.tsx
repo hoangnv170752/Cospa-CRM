@@ -53,7 +53,7 @@ export default function SignInPage() {
 
     try {
       await login({ username: email, password });
-      router.push("/");
+      router.push("/iot-dashboard");
     } catch (err) {
       console.error(err);
       toast.error("Login failed. Please try again.");

@@ -17,3 +17,5 @@ crm/scripts/explore-db.ts
 .env
 .env.*
 !.env.example
+
+docs

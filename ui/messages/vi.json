@@ -1,0 +1,476 @@
+{
+  "landing": {
+    "nav": {
+      "crmLogin": "Đăng nhập CRM",
+      "signIn": "Đăng nhập"
+    },
+    "hero": {
+      "title": "Nền tảng CRM Đa Thuê bao",
+      "subtitle": "Giải pháp CRM mạnh mẽ, có thể tùy chỉnh thương hiệu để quản lý công ty, liên hệ, giao dịch, nhà cung cấp và hợp đồng với bảo mật cấp doanh nghiệp và hỗ trợ đa ngôn ngữ.",
+      "getStarted": "Bắt đầu",
+      "signInCrm": "Đăng nhập CRM"
+    },
+    "features": {
+      "title": "Tính năng Mạnh mẽ",
+      "subtitle": "Tất cả những gì bạn cần để quản lý quan hệ khách hàng hiệu quả",
+      "excelImport": {
+        "title": "Nhập Excel Hàng loạt",
+        "description": "Nhập công ty, liên hệ, sản phẩm và nhiều hơn nữa từ file Excel với ánh xạ cột thông minh và xác thực."
+      },
+      "messaging": {
+        "title": "Nhắn tin Thuê bao-Quản trị",
+        "description": "Giao tiếp thời gian thực giữa thuê bao và quản trị viên để hỗ trợ và cộng tác liền mạch."
+      },
+      "profileManagement": {
+        "title": "Quản lý Hồ sơ & Media",
+        "description": "Quản lý hồ sơ người dùng với tải ảnh đại diện, tùy chọn và cài đặt tài khoản toàn diện."
+      },
+      "selfService": {
+        "title": "Đăng ký Tự phục vụ",
+        "description": "Tổ chức có thể đăng ký và chờ phê duyệt của quản trị viên, đơn giản hóa quy trình tiếp nhận."
+      },
+      "auditLog": {
+        "title": "Nhật ký Kiểm toán",
+        "description": "Theo dõi hoạt động đầy đủ cho tuân thủ, giám sát bảo mật và trách nhiệm giải trình."
+      },
+      "mobileReady": {
+        "title": "Giao diện Di động",
+        "description": "Thiết kế responsive hoạt động mượt mà trên máy tính, máy tính bảng và thiết bị di động."
+      }
+    },
+    "benefits": {
+      "title": "Tại sao chọn Cospa CRM?",
+      "subtitle": "Được xây dựng cho doanh nghiệp hiện đại với yêu cầu cấp doanh nghiệp",
+      "multiTenant": {
+        "title": "Đa Thuê bao",
+        "description": "Dữ liệu cách ly cho mỗi tổ chức với hiệu quả hạ tầng chia sẻ."
+      },
+      "whiteLabel": {
+        "title": "Nhãn trắng",
+        "description": "Tùy chỉnh thương hiệu với logo, màu sắc và tên miền cho mỗi thuê bao."
+      },
+      "rbac": {
+        "title": "Vai trò & Quyền hạn",
+        "description": "Kiểm soát truy cập chi tiết với vai trò sys-admin, tenant-admin và user."
+      },
+      "i18n": {
+        "title": "Đa ngôn ngữ",
+        "description": "Hỗ trợ Tiếng Anh, Tiếng Trung, Tiếng Pháp, Tiếng Tây Ban Nha, Tiếng Việt và nhiều hơn nữa."
+      }
+    },
+    "targetUsers": {
+      "title": "Được Xây dựng Cho Ngành của Bạn",
+      "subtitle": "Cospa CRM được thiết kế cho các tổ chức cần quản lý khách hàng mạnh mẽ",
+      "hardware": "Nhà sản xuất phần cứng quản lý mạng lưới đại lý",
+      "integrators": "Nhà tích hợp hệ thống điều phối triển khai khách hàng",
+      "facilities": "Đội ngũ cơ sở vật chất và vận hành theo dõi hợp đồng dịch vụ",
+      "resellers": "Nhà phân phối thiết bị quản lý kho hàng và quan hệ khách hàng"
+    },
+    "stats": {
+      "companies": "1000+",
+      "companiesLabel": "Công ty Được Quản lý",
+      "contacts": "10K+",
+      "contactsLabel": "Liên hệ Được Theo dõi",
+      "deals": "5 tỷ+",
+      "dealsLabel": "Pipeline Giao dịch",
+      "security": "SOC 2",
+      "securityLabel": "Sẵn sàng Tuân thủ"
+    },
+    "testimonials": {
+      "title": "Khách hàng Nói gì về Chúng tôi",
+      "subtitle": "Được tin tưởng bởi các doanh nghiệp trên toàn thế giới để quản lý quan hệ khách hàng",
+      "items": [
+        {
+          "name": "Nguyễn Tuấn",
+          "role": "CEO, TechViet Solutions",
+          "quote": "Cospa CRM đã thay đổi cách chúng tôi quản lý mạng lưới đại lý. Tính năng đa thuê bao chính xác là những gì chúng tôi cần cho hoạt động phân phối phần cứng."
+        },
+        {
+          "name": "Trần Hương",
+          "role": "Quản lý Vận hành, SmartHome Inc",
+          "quote": "Tính năng nhập Excel đã tiết kiệm cho chúng tôi vô số giờ làm việc. Chúng tôi đã di chuyển hơn 5000 liên hệ trong vài phút. Hệ thống trực quan và nhóm của chúng tôi nhanh chóng làm quen."
+        },
+        {
+          "name": "Lê Văn",
+          "role": "Giám đốc Kinh doanh, IoT Global",
+          "quote": "Cuối cùng cũng có một CRM hiểu về quan hệ B2B. Các tính năng quản lý hợp đồng và theo dõi nhà cung cấp thực sự là bước đột phá cho doanh nghiệp chúng tôi."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Sẵn sàng Chuyển đổi CRM của Bạn?",
+      "subtitle": "Bắt đầu quản lý quan hệ khách hàng hiệu quả hơn ngay hôm nay.",
+      "register": "Đăng ký Tổ chức",
+      "existingUser": "Đăng nhập Người dùng"
+    },
+    "footer": {
+      "terms": "Điều khoản Dịch vụ",
+      "privacy": "Chính sách Bảo mật",
+      "copyright": "© 2026 Cospa CRM. Bảo lưu mọi quyền."
+    }
+  },
+  "common": {
+    "loading": "Đang tải...",
+    "error": "Lỗi",
+    "save": "Lưu",
+    "cancel": "Hủy",
+    "search": "Tìm kiếm",
+    "searchByName": "Tìm theo tên...",
+    "noResults": "Không tìm thấy kết quả",
+    "noData": "Không có dữ liệu",
+    "page": "Trang",
+    "of": "trên",
+    "previous": "Trước",
+    "next": "Tiếp",
+    "all": "Tất cả",
+    "online": "Trực tuyến",
+    "offline": "Ngoại tuyến",
+    "comingSoon": "Sắp ra mắt!",
+    "type": "Loại",
+    "contactAdmin": "Liên hệ quản trị viên",
+    "dontHaveAccount": "Chưa có tài khoản?"
+  },
+  "nav": {
+    "iot": "Cospa CRM",
+    "dashboard": "Bảng điều khiển",
+    "devices": "Thiết bị",
+    "assets": "Tài sản",
+    "settings": "Cài đặt",
+    "signOut": "Đăng xuất",
+    "feedback": "Phản hồi",
+    "docs": "Tài liệu",
+    "ask": "Hỏi",
+    "crm": {
+      "title": "CRM",
+      "dashboard": "Bảng điều khiển",
+      "tenants": "Thuê bao",
+      "companies": "Công ty",
+      "contacts": "Liên hệ",
+      "products": "Sản phẩm",
+      "deals": "Giao dịch",
+      "vendors": "Nhà cung cấp",
+      "contracts": "Hợp đồng",
+      "tickets": "Yêu cầu hỗ trợ",
+      "auditLogs": "Nhật ký Kiểm toán",
+      "settings": "Cài đặt"
+    }
+  },
+  "auth": {
+    "signIn": "Đăng nhập",
+    "signInTitle": "Đăng nhập bằng tài khoản Thingsboard",
+    "signInDescription": "Nhập thông tin đăng nhập để truy cập Cospa CRM",
+    "email": "Email",
+    "password": "Mật khẩu",
+    "signingIn": "Đang đăng nhập...",
+    "signInWithGoogle": "Đăng nhập bằng Google",
+    "termsText": "Bằng việc đăng nhập, bạn đồng ý với",
+    "termsOfService": "Điều khoản Dịch vụ",
+    "and": "và",
+    "privacyPolicy": "Chính sách Bảo mật",
+    "crmLogin": "Đăng nhập CRM Admin",
+    "iotLogin": "Đăng nhập Cospa CRM"
+  },
+  "dashboard": {
+    "title": "Bảng điều khiển",
+    "welcomeBack": "Chào mừng trở lại",
+    "overview": "Tổng quan dữ liệu CRM và hoạt động",
+    "totalDevices": "Tổng Thiết bị",
+    "activeDevices": "Thiết bị Hoạt động",
+    "totalAssets": "Tổng Tài sản",
+    "alerts": "Cảnh báo",
+    "deviceStatus": "Trạng thái Thiết bị",
+    "recentActivity": "Hoạt động Gần đây",
+    "devicesByProfile": "Thiết bị theo Hồ sơ",
+    "devicesByProfileDesc": "Số lượng thiết bị trong mỗi loại hồ sơ",
+    "assetsByProfile": "Tài sản theo Hồ sơ",
+    "assetsByProfileDesc": "Số lượng tài sản trong mỗi loại hồ sơ"
+  },
+  "devices": {
+    "title": "Thiết bị",
+    "description": "Quản lý và giám sát thiết bị của bạn",
+    "devicesCount": "{count} thiết bị",
+    "name": "Tên",
+    "label": "Nhãn",
+    "profile": "Hồ sơ",
+    "status": "Trạng thái",
+    "created": "Ngày tạo",
+    "allProfiles": "Tất cả Hồ sơ",
+    "allStatus": "Tất cả Trạng thái",
+    "noDevices": "Không tìm thấy thiết bị"
+  },
+  "assets": {
+    "title": "Tài sản",
+    "description": "Quản lý và theo dõi tài sản của bạn",
+    "assetsCount": "{count} tài sản",
+    "name": "Tên",
+    "label": "Nhãn",
+    "profile": "Hồ sơ",
+    "created": "Ngày tạo",
+    "allProfiles": "Tất cả Hồ sơ",
+    "noAssets": "Không tìm thấy tài sản"
+  },
+  "assistant": {
+    "title": "Trợ lý Cospa",
+    "greeting": "Xin chào! Tôi là Trợ lý Cospa của bạn. Hỏi tôi bất cứ điều gì về dữ liệu CRM, khách hàng hoặc các tính năng bảng điều khiển.",
+    "placeholder": "Hỏi về dữ liệu CRM của bạn...",
+    "comingSoonResponse": "Tính năng này sắp ra mắt! Tôi sẽ có thể giúp bạn với phân tích khách hàng, phân tích dữ liệu và quản lý CRM."
+  },
+  "settings": {
+    "title": "Cài đặt",
+    "description": "Quản lý hồ sơ và tùy chọn của bạn",
+    "editProfile": "Chỉnh sửa Hồ sơ",
+    "profile": {
+      "title": "Hồ sơ",
+      "description": "Quản lý cài đặt tài khoản"
+    },
+    "notifications": {
+      "title": "Thông báo",
+      "description": "Cấu hình tùy chọn thông báo"
+    },
+    "security": {
+      "title": "Bảo mật",
+      "description": "Mật khẩu và xác thực"
+    },
+    "appearance": {
+      "title": "Giao diện",
+      "description": "Tùy chỉnh giao diện bảng điều khiển"
+    },
+    "language": {
+      "title": "Ngôn ngữ & Khu vực",
+      "description": "Cài đặt ngôn ngữ và múi giờ",
+      "selectLanguage": "Chọn Ngôn ngữ",
+      "english": "Tiếng Anh",
+      "chinese": "Tiếng Trung (Giản thể)",
+      "french": "Tiếng Pháp",
+      "spanish": "Tiếng Tây Ban Nha",
+      "vietnamese": "Tiếng Việt"
+    }
+  },
+  "crm": {
+    "dashboard": {
+      "title": "Bảng điều khiển CRM",
+      "description": "Tổng quan quan hệ khách hàng",
+      "totalCompanies": "Tổng Công ty",
+      "totalContacts": "Tổng Liên hệ",
+      "totalDeals": "Tổng Giao dịch",
+      "dealValue": "Giá trị Giao dịch",
+      "openTickets": "Yêu cầu Đang mở",
+      "activeContracts": "Hợp đồng Hoạt động",
+      "dealsByStage": "Giao dịch theo Giai đoạn",
+      "recentActivity": "Hoạt động Gần đây"
+    },
+    "companies": {
+      "title": "Công ty",
+      "description": "Quản lý khách hàng doanh nghiệp",
+      "addCompany": "Thêm Công ty",
+      "editCompany": "Sửa Công ty",
+      "deleteCompany": "Xóa Công ty",
+      "name": "Tên Công ty",
+      "industry": "Ngành nghề",
+      "website": "Website",
+      "phone": "Điện thoại",
+      "address": "Địa chỉ",
+      "size": "Quy mô",
+      "noCompanies": "Không tìm thấy công ty",
+      "sizes": {
+        "small": "Nhỏ",
+        "medium": "Vừa",
+        "large": "Lớn",
+        "enterprise": "Doanh nghiệp"
+      }
+    },
+    "contacts": {
+      "title": "Liên hệ",
+      "description": "Quản lý liên hệ kinh doanh",
+      "addContact": "Thêm Liên hệ",
+      "editContact": "Sửa Liên hệ",
+      "deleteContact": "Xóa Liên hệ",
+      "firstName": "Tên",
+      "lastName": "Họ",
+      "email": "Email",
+      "phone": "Điện thoại",
+      "position": "Chức vụ",
+      "company": "Công ty",
+      "notes": "Ghi chú",
+      "noContacts": "Không tìm thấy liên hệ"
+    },
+    "deals": {
+      "title": "Giao dịch",
+      "description": "Theo dõi pipeline bán hàng",
+      "addDeal": "Thêm Giao dịch",
+      "editDeal": "Sửa Giao dịch",
+      "deleteDeal": "Xóa Giao dịch",
+      "dealTitle": "Tiêu đề",
+      "value": "Giá trị",
+      "stage": "Giai đoạn",
+      "probability": "Xác suất",
+      "expectedClose": "Dự kiến Đóng",
+      "contact": "Liên hệ",
+      "company": "Công ty",
+      "noDeals": "Không tìm thấy giao dịch",
+      "stages": {
+        "lead": "Tiềm năng",
+        "qualified": "Đủ điều kiện",
+        "proposal": "Đề xuất",
+        "negotiation": "Đàm phán",
+        "closed_won": "Thắng",
+        "closed_lost": "Thua"
+      }
+    },
+    "vendors": {
+      "title": "Nhà cung cấp",
+      "description": "Quản lý nhà cung cấp và đối tác",
+      "addVendor": "Thêm Nhà cung cấp",
+      "editVendor": "Sửa Nhà cung cấp",
+      "deleteVendor": "Xóa Nhà cung cấp",
+      "name": "Tên Nhà cung cấp",
+      "code": "Mã",
+      "type": "Loại",
+      "email": "Email",
+      "phone": "Điện thoại",
+      "website": "Website",
+      "address": "Địa chỉ",
+      "country": "Quốc gia",
+      "rating": "Đánh giá",
+      "status": "Trạng thái",
+      "noVendors": "Không tìm thấy nhà cung cấp",
+      "types": {
+        "supplier": "Nhà cung cấp",
+        "manufacturer": "Nhà sản xuất",
+        "distributor": "Nhà phân phối",
+        "service_provider": "Nhà cung cấp dịch vụ"
+      },
+      "statuses": {
+        "pending": "Chờ duyệt",
+        "active": "Hoạt động",
+        "inactive": "Không hoạt động",
+        "blacklisted": "Danh sách đen"
+      }
+    },
+    "contracts": {
+      "title": "Hợp đồng",
+      "description": "Quản lý thỏa thuận kinh doanh",
+      "addContract": "Thêm Hợp đồng",
+      "editContract": "Sửa Hợp đồng",
+      "deleteContract": "Xóa Hợp đồng",
+      "contractNumber": "Số Hợp đồng",
+      "contractTitle": "Tiêu đề",
+      "type": "Loại",
+      "vendor": "Nhà cung cấp",
+      "company": "Công ty",
+      "startDate": "Ngày Bắt đầu",
+      "endDate": "Ngày Kết thúc",
+      "value": "Giá trị",
+      "status": "Trạng thái",
+      "noContracts": "Không tìm thấy hợp đồng",
+      "types": {
+        "purchase": "Mua hàng",
+        "sales": "Bán hàng",
+        "service": "Dịch vụ",
+        "maintenance": "Bảo trì",
+        "subscription": "Đăng ký",
+        "nda": "NDA",
+        "partnership": "Đối tác"
+      },
+      "statuses": {
+        "draft": "Nháp",
+        "pending_approval": "Chờ Phê duyệt",
+        "active": "Hoạt động",
+        "expired": "Hết hạn",
+        "cancelled": "Đã hủy"
+      }
+    },
+    "tickets": {
+      "title": "Yêu cầu Hỗ trợ",
+      "description": "Quản lý yêu cầu hỗ trợ khách hàng",
+      "addTicket": "Thêm Yêu cầu",
+      "editTicket": "Sửa Yêu cầu",
+      "ticketNumber": "Số Yêu cầu",
+      "ticketTitle": "Tiêu đề",
+      "priority": "Ưu tiên",
+      "status": "Trạng thái",
+      "category": "Danh mục",
+      "resolution": "Giải pháp",
+      "noTickets": "Không tìm thấy yêu cầu",
+      "priorities": {
+        "low": "Thấp",
+        "medium": "Trung bình",
+        "high": "Cao",
+        "critical": "Khẩn cấp"
+      },
+      "statuses": {
+        "open": "Đang mở",
+        "in_progress": "Đang xử lý",
+        "waiting_on_customer": "Chờ Khách hàng",
+        "resolved": "Đã giải quyết",
+        "closed": "Đã đóng"
+      }
+    },
+    "import": {
+      "button": "Nhập Excel",
+      "title": "Nhập {entity}",
+      "description": "Tải lên file Excel để nhập hàng loạt {entity} vào hệ thống.",
+      "dropzone": "Kéo thả file vào đây hoặc nhấp để duyệt",
+      "supportedFormats": "Hỗ trợ file .xlsx, .xls và .csv",
+      "downloadTemplate": "Tải Mẫu",
+      "columnMapping": "Ánh xạ Cột",
+      "excelColumn": "Cột Excel",
+      "systemField": "Trường Hệ thống",
+      "required": "Bắt buộc",
+      "preview": "Xem trước",
+      "rows": "dòng",
+      "import": "Nhập",
+      "importing": "Đang nhập...",
+      "cancel": "Hủy",
+      "success": "Đã nhập thành công {count} mục",
+      "failed": "Không thể nhập {count} mục",
+      "errors": "Lỗi",
+      "noFile": "Chưa chọn file",
+      "invalidFile": "Định dạng file không hợp lệ",
+      "emptyFile": "File trống",
+      "validationError": "Lỗi xác thực dòng {row}: {error}",
+      "entities": {
+        "companies": "Công ty",
+        "contacts": "Liên hệ",
+        "products": "Sản phẩm",
+        "deals": "Giao dịch",
+        "vendors": "Nhà cung cấp",
+        "contracts": "Hợp đồng"
+      },
+      "columns": {
+        "name": "Tên",
+        "industry": "Ngành nghề",
+        "website": "Website",
+        "phone": "Điện thoại",
+        "address": "Địa chỉ",
+        "size": "Quy mô",
+        "firstName": "Tên",
+        "lastName": "Họ",
+        "email": "Email",
+        "position": "Chức vụ",
+        "company": "Công ty",
+        "notes": "Ghi chú",
+        "sku": "Mã SKU",
+        "description": "Mô tả",
+        "category": "Danh mục",
+        "unitPrice": "Đơn giá",
+        "stockQuantity": "Số lượng Tồn kho",
+        "title": "Tiêu đề",
+        "value": "Giá trị",
+        "stage": "Giai đoạn",
+        "probability": "Xác suất",
+        "expectedCloseDate": "Ngày Dự kiến Đóng",
+        "contact": "Liên hệ",
+        "code": "Mã",
+        "type": "Loại",
+        "country": "Quốc gia",
+        "rating": "Đánh giá",
+        "status": "Trạng thái",
+        "contractNumber": "Số Hợp đồng",
+        "vendor": "Nhà cung cấp",
+        "startDate": "Ngày Bắt đầu",
+        "endDate": "Ngày Kết thúc"
+      }
+    }
+  }
+}

@@ -1,4 +1,114 @@
 {
+  "landing": {
+    "nav": {
+      "crmLogin": "CRM 登录",
+      "signIn": "登录"
+    },
+    "hero": {
+      "title": "多租户 CRM 平台",
+      "subtitle": "一个强大的白标 CRM 解决方案，用于管理公司、联系人、交易、供应商和合同，具有企业级安全性和多语言支持。",
+      "getStarted": "开始使用",
+      "signInCrm": "登录 CRM"
+    },
+    "features": {
+      "title": "强大功能",
+      "subtitle": "有效管理客户关系所需的一切",
+      "excelImport": {
+        "title": "Excel 批量导入",
+        "description": "从 Excel 文件导入公司、联系人、产品等，具有智能列映射和验证功能。"
+      },
+      "messaging": {
+        "title": "租户-管理员消息",
+        "description": "租户和管理员之间的实时通信，实现无缝支持和协作。"
+      },
+      "profileManagement": {
+        "title": "个人资料与媒体管理",
+        "description": "管理用户个人资料，包括头像上传、偏好设置和全面的账户设置。"
+      },
+      "selfService": {
+        "title": "自助注册",
+        "description": "组织可以注册并等待管理员批准，简化入职流程。"
+      },
+      "auditLog": {
+        "title": "审计日志跟踪",
+        "description": "完整的活动跟踪，用于合规性、安全监控和问责。"
+      },
+      "mobileReady": {
+        "title": "移动端适配",
+        "description": "响应式设计，在桌面、平板和移动设备上无缝运行。"
+      }
+    },
+    "benefits": {
+      "title": "为什么选择 Cospa CRM？",
+      "subtitle": "为具有企业需求的现代企业而构建",
+      "multiTenant": {
+        "title": "多租户",
+        "description": "每个组织的数据隔离，共享基础设施效率。"
+      },
+      "whiteLabel": {
+        "title": "白标",
+        "description": "每个租户可自定义品牌，包括标志、颜色和域名。"
+      },
+      "rbac": {
+        "title": "角色与权限",
+        "description": "细粒度访问控制，包含系统管理员、租户管理员和用户角色。"
+      },
+      "i18n": {
+        "title": "多语言",
+        "description": "支持英语、中文、法语、西班牙语等。"
+      }
+    },
+    "targetUsers": {
+      "title": "为您的行业打造",
+      "subtitle": "Cospa CRM 专为需要强大客户管理的组织设计",
+      "hardware": "管理经销商网络的硬件制造商",
+      "integrators": "协调客户部署的系统集成商",
+      "facilities": "跟踪服务合同的设施运营团队",
+      "resellers": "管理库存和客户关系的设备经销商"
+    },
+    "stats": {
+      "companies": "1000+",
+      "companiesLabel": "管理的公司",
+      "contacts": "10K+",
+      "contactsLabel": "跟踪的联系人",
+      "deals": "500万+",
+      "dealsLabel": "交易管道",
+      "security": "SOC 2",
+      "securityLabel": "合规就绪"
+    },
+    "testimonials": {
+      "title": "客户评价",
+      "subtitle": "全球企业信赖我们管理客户关系",
+      "items": [
+        {
+          "name": "阮俊",
+          "role": "CEO, TechViet Solutions",
+          "quote": "Cospa CRM 彻底改变了我们管理经销商网络的方式。多租户功能正是我们硬件分销业务所需要的。"
+        },
+        {
+          "name": "陈香",
+          "role": "运营经理, SmartHome Inc",
+          "quote": "Excel 导入功能为我们节省了无数小时。我们在几分钟内迁移了 5000 多个联系人。系统直观，团队很快就上手了。"
+        },
+        {
+          "name": "黎文",
+          "role": "销售总监, IoT Global",
+          "quote": "终于有一个理解 B2B 关系的 CRM 了。合同管理和供应商跟踪功能对我们的业务来说是颠覆性的。"
+        }
+      ]
+    },
+    "cta": {
+      "title": "准备好转型您的 CRM 了吗？",
+      "subtitle": "今天就开始更有效地管理您的客户关系。",
+      "register": "注册您的组织",
+      "existingUser": "现有用户登录"
+    },
+    "footer": {
+      "terms": "服务条款",
+      "privacy": "隐私政策",
+      "copyright": "© 2026 Cospa CRM. 保留所有权利。"
+    }
+  },
   "common": {
     "loading": "加载中...",
     "error": "错误",

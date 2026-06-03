@@ -1,4 +1,114 @@
 {
+  "landing": {
+    "nav": {
+      "crmLogin": "Iniciar sesión CRM",
+      "signIn": "Iniciar sesión"
+    },
+    "hero": {
+      "title": "Plataforma CRM Multi-Tenant",
+      "subtitle": "Una potente solución CRM de marca blanca para gestionar empresas, contactos, negocios, proveedores y contratos con seguridad empresarial y soporte multilingüe.",
+      "getStarted": "Comenzar",
+      "signInCrm": "Iniciar sesión en CRM"
+    },
+    "features": {
+      "title": "Funcionalidades Potentes",
+      "subtitle": "Todo lo que necesitas para gestionar eficazmente tus relaciones con clientes",
+      "excelImport": {
+        "title": "Importación Masiva de Excel",
+        "description": "Importa empresas, contactos, productos y más desde archivos Excel con mapeo inteligente de columnas y validación."
+      },
+      "messaging": {
+        "title": "Mensajería Tenant-Admin",
+        "description": "Comunicación en tiempo real entre tenants y administradores para soporte y colaboración fluidos."
+      },
+      "profileManagement": {
+        "title": "Gestión de Perfiles y Medios",
+        "description": "Gestiona perfiles de usuario con carga de avatares, preferencias y configuración completa de cuenta."
+      },
+      "selfService": {
+        "title": "Registro de Autoservicio",
+        "description": "Las organizaciones pueden registrarse y esperar la aprobación del administrador, simplificando el proceso de incorporación."
+      },
+      "auditLog": {
+        "title": "Registro de Auditoría",
+        "description": "Seguimiento completo de actividades para cumplimiento, monitoreo de seguridad y responsabilidad."
+      },
+      "mobileReady": {
+        "title": "Interfaz Móvil",
+        "description": "Diseño responsive que funciona perfectamente en escritorio, tablet y móvil."
+      }
+    },
+    "benefits": {
+      "title": "¿Por Qué Elegir Cospa CRM?",
+      "subtitle": "Diseñado para empresas modernas con requisitos empresariales",
+      "multiTenant": {
+        "title": "Multi-Tenant",
+        "description": "Datos aislados para cada organización con eficiencia de infraestructura compartida."
+      },
+      "whiteLabel": {
+        "title": "Marca Blanca",
+        "description": "Personalización de marca con logos, colores y dominio para cada tenant."
+      },
+      "rbac": {
+        "title": "Roles y Permisos",
+        "description": "Control de acceso granular con roles de sys-admin, tenant-admin y usuario."
+      },
+      "i18n": {
+        "title": "Multilingüe",
+        "description": "Soporte para inglés, chino, francés, español y más."
+      }
+    },
+    "targetUsers": {
+      "title": "Diseñado Para Tu Industria",
+      "subtitle": "Cospa CRM está diseñado para organizaciones que necesitan una gestión de clientes robusta",
+      "hardware": "Fabricantes de hardware gestionando redes de distribuidores",
+      "integrators": "Integradores de sistemas coordinando despliegues de clientes",
+      "facilities": "Equipos de instalaciones y operaciones rastreando contratos de servicio",
+      "resellers": "Revendedores de dispositivos gestionando inventario y relaciones con clientes"
+    },
+    "stats": {
+      "companies": "1000+",
+      "companiesLabel": "Empresas Gestionadas",
+      "contacts": "10K+",
+      "contactsLabel": "Contactos Rastreados",
+      "deals": "5M€+",
+      "dealsLabel": "Pipeline de Negocios",
+      "security": "SOC 2",
+      "securityLabel": "Listo para Cumplimiento"
+    },
+    "testimonials": {
+      "title": "Lo que Dicen Nuestros Clientes",
+      "subtitle": "Confiado por empresas de todo el mundo para gestionar sus relaciones con clientes",
+      "items": [
+        {
+          "name": "Nguyen Tuan",
+          "role": "CEO, TechViet Solutions",
+          "quote": "Cospa CRM ha transformado la forma en que gestionamos nuestra red de distribuidores. La función multi-tenant es exactamente lo que necesitábamos para nuestro negocio de distribución de hardware."
+        },
+        {
+          "name": "Tran Huong",
+          "role": "Gerente de Operaciones, SmartHome Inc",
+          "quote": "La función de importación de Excel nos ahorró innumerables horas. Migramos más de 5000 contactos en minutos. El sistema es intuitivo y nuestro equipo lo adoptó rápidamente."
+        },
+        {
+          "name": "Le Van",
+          "role": "Director de Ventas, IoT Global",
+          "quote": "Por fin un CRM que entiende las relaciones B2B. Las funciones de gestión de contratos y seguimiento de proveedores son revolucionarias para nuestro negocio."
+        }
+      ]
+    },
+    "cta": {
+      "title": "¿Listo Para Transformar Tu CRM?",
+      "subtitle": "Comienza a gestionar tus relaciones con clientes más eficazmente hoy.",
+      "register": "Registra Tu Organización",
+      "existingUser": "Inicio de Sesión de Usuario Existente"
+    },
+    "footer": {
+      "terms": "Términos de Servicio",
+      "privacy": "Política de Privacidad",
+      "copyright": "© 2026 Cospa CRM. Todos los derechos reservados."
+    }
+  },
   "common": {
     "loading": "Cargando...",
     "error": "Error",

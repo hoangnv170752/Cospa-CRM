@@ -1,4 +1,114 @@
 {
+  "landing": {
+    "nav": {
+      "crmLogin": "CRM Login",
+      "signIn": "Sign In"
+    },
+    "hero": {
+      "title": "Multi-Tenant CRM Platform",
+      "subtitle": "A powerful, white-label CRM solution for managing companies, contacts, deals, vendors, and contracts with enterprise-grade security and multi-language support.",
+      "getStarted": "Get Started",
+      "signInCrm": "Sign In to CRM"
+    },
+    "features": {
+      "title": "Powerful Features",
+      "subtitle": "Everything you need to manage your customer relationships effectively",
+      "excelImport": {
+        "title": "Excel Bulk Import",
+        "description": "Import companies, contacts, products, and more from Excel files with smart column mapping and validation."
+      },
+      "messaging": {
+        "title": "Tenant-Admin Messaging",
+        "description": "Real-time communication between tenants and administrators for seamless support and collaboration."
+      },
+      "profileManagement": {
+        "title": "Profile & Media Management",
+        "description": "Manage user profiles with avatar uploads, preferences, and comprehensive account settings."
+      },
+      "selfService": {
+        "title": "Self-Service Registration",
+        "description": "Organizations can register and await admin approval, streamlining the onboarding process."
+      },
+      "auditLog": {
+        "title": "Audit Log Trail",
+        "description": "Complete activity tracking for compliance, security monitoring, and accountability."
+      },
+      "mobileReady": {
+        "title": "Mobile-Ready UI",
+        "description": "Responsive design that works seamlessly across desktop, tablet, and mobile devices."
+      }
+    },
+    "benefits": {
+      "title": "Why Choose Cospa CRM?",
+      "subtitle": "Built for modern businesses with enterprise requirements",
+      "multiTenant": {
+        "title": "Multi-Tenancy",
+        "description": "Isolated data for each organization with shared infrastructure efficiency."
+      },
+      "whiteLabel": {
+        "title": "White-Label",
+        "description": "Custom branding with logos, colors, and domain for each tenant."
+      },
+      "rbac": {
+        "title": "Roles & Permissions",
+        "description": "Granular access control with sys-admin, tenant-admin, and user roles."
+      },
+      "i18n": {
+        "title": "Multiple Languages",
+        "description": "Support for English, Chinese, French, Spanish, and more."
+      }
+    },
+    "targetUsers": {
+      "title": "Built For Your Industry",
+      "subtitle": "Cospa CRM is designed for organizations that need robust customer management",
+      "hardware": "Hardware manufacturers managing dealer networks",
+      "integrators": "Systems integrators coordinating customer deployments",
+      "facilities": "Facilities and operations teams tracking service contracts",
+      "resellers": "Device resellers managing inventory and customer relationships"
+    },
+    "stats": {
+      "companies": "1000+",
+      "companiesLabel": "Companies Managed",
+      "contacts": "10K+",
+      "contactsLabel": "Contacts Tracked",
+      "deals": "$5M+",
+      "dealsLabel": "Deal Pipeline",
+      "security": "SOC 2",
+      "securityLabel": "Compliance Ready"
+    },
+    "testimonials": {
+      "title": "What Our Customers Say",
+      "subtitle": "Trusted by businesses worldwide to manage their customer relationships",
+      "items": [
+        {
+          "name": "Nguyen Tuan",
+          "role": "CEO, TechViet Solutions",
+          "quote": "Cospa CRM has transformed how we manage our dealer network. The multi-tenant feature is exactly what we needed for our hardware distribution business."
+        },
+        {
+          "name": "Tran Huong",
+          "role": "Operations Manager, SmartHome Inc",
+          "quote": "The Excel import feature saved us countless hours. We migrated 5000+ contacts in minutes. The system is intuitive and our team adopted it quickly."
+        },
+        {
+          "name": "Le Van",
+          "role": "Sales Director, IoT Global",
+          "quote": "Finally, a CRM that understands B2B relationships. The contract management and vendor tracking features are game-changers for our business."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Ready to Transform Your CRM?",
+      "subtitle": "Start managing your customer relationships more effectively today.",
+      "register": "Register Your Organization",
+      "existingUser": "Existing User Login"
+    },
+    "footer": {
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy",
+      "copyright": "© 2026 Cospa CRM. All rights reserved."
+    }
+  },
   "common": {
     "loading": "Loading...",
     "error": "Error",

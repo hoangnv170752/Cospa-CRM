@@ -1,11 +1,20 @@
-# IoT Dashboard - TB Stack
+# Cospa CRM
 
 <p align="center">
-  <img src="ui/public/iot-icon.png" alt="IoT Dashboard" width="100" height="100">
+  <img src="ui/public/iot-icon.png" alt="Cospa CRM" width="100" height="100">
 </p>
 
 <p align="center">
-  <strong>Industrial Automation Monitoring & Asset Management Platform</strong>
+  <strong>Multi-Tenant CRM Platform with IoT Integration</strong>
+</p>
+
+<p align="center">
+  <a href="https://unikorn.vn/p/cospa-crm?ref=embed-cospa-crm" target="_blank">
+    <img src="https://unikorn.vn/api/widgets/badge/cospa-crm?theme=light" alt="Cospa CRM trên Unikorn.vn" width="256" height="64" />
+  </a>
+  <a href="https://unikorn.vn/p/cospa-crm?ref=embed-cospa-crm" target="_blank">
+    <img src="https://unikorn.vn/api/widgets/badge/cospa-crm/rank?theme=light&type=daily" alt="Cospa CRM - Hàng ngày" width="250" height="64" />
+  </a>
 </p>
 
 ## Business Value

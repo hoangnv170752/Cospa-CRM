@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useLocale } from "@/contexts/locale-context";
+import { CookieConsent } from "@/components/cookie-consent";
 import {
   Building2,
   Users,
@@ -408,6 +409,9 @@ export default function LandingPage() {
           </div>
         </div>
       </footer>
+
+      {/* Cookie Consent Banner */}
+      <CookieConsent />
     </div>
   );
 }

@@ -1,5 +1,12 @@
 {
   "landing": {
+    "cookie": {
+      "title": "Cospa CRM 上的 Cookie",
+      "description": "我们使用 1 个 cookie 来记住您的语言偏好。它不用于跟踪或广告。您可以接受或拒绝 - 两种选择都会被尊重。",
+      "learnMore": "了解更多",
+      "accept": "接受",
+      "reject": "拒绝"
+    },
     "nav": {
       "crmLogin": "CRM 登录",
       "signIn": "登录"

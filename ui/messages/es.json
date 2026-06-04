@@ -1,5 +1,12 @@
 {
   "landing": {
+    "cookie": {
+      "title": "Cookies en Cospa CRM",
+      "description": "Usamos 1 cookie para recordar tu preferencia de idioma. No se usa para seguimiento ni publicidad. Puedes aceptar o rechazar — ambas opciones son respetadas.",
+      "learnMore": "Saber más",
+      "accept": "Aceptar",
+      "reject": "Rechazar"
+    },
     "nav": {
       "crmLogin": "Iniciar sesión CRM",
       "signIn": "Iniciar sesión"

@@ -1,6 +1,7 @@
+/* eslint-disable react-hooks/set-state-in-effect */
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Cookie } from "lucide-react";
@@ -8,10 +9,14 @@ import Link from "next/link";
 
 export function CookieConsent() {
   const t = useTranslations("landing.cookie");
-  const [showBanner, setShowBanner] = useState(() => {
-    if (typeof window === "undefined") return false;
-    return localStorage.getItem("cookie-consent") === null;
-  });
+  const [showBanner, setShowBanner] = useState(false);
+
+  useEffect(() => {
+    const consent = localStorage.getItem("cookie-consent");
+    if (consent === null) {
+      setShowBanner(true);
+    }
+  }, []);
 
   const handleAccept = () => {
     localStorage.setItem("cookie-consent", "accepted");

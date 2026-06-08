@@ -11,6 +11,7 @@ interface ContactEmail {
   email: string;
   firstName?: string;
   lastName?: string;
+  id?: string;
 }
 
 interface SendBulkEmailBody {
@@ -86,6 +87,7 @@ export async function emailRoutes(fastify: FastifyInstance) {
               totalContacts: { type: 'number' },
               successCount: { type: 'number' },
               failedCount: { type: 'number' },
+              emailId: { type: 'string' },
               errors: { type: 'array', items: { type: 'object' } },
             },
           },
@@ -117,6 +119,7 @@ export async function emailRoutes(fastify: FastifyInstance) {
             ...tenantFilter,
           },
           select: {
+            id: true,
             email: true,
             firstName: true,
             lastName: true,
@@ -141,8 +144,34 @@ export async function emailRoutes(fastify: FastifyInstance) {
         ? `${fromName} <${FROM_EMAIL}>`
         : FROM_EMAIL;
 
+      // Create email record in database
+      const emailRecord = await prisma.email.create({
+        data: {
+          subject,
+          htmlContent,
+          fromName: fromName || null,
+          fromEmail: FROM_EMAIL,
+          status: 'sending',
+          sentById: request.user?.userId || null,
+          tenantId: request.user?.tenantId || null,
+          recipients: {
+            create: contactList.map((contact) => ({
+              email: contact.email,
+              name: contact.firstName && contact.lastName
+                ? `${contact.firstName} ${contact.lastName}`
+                : contact.firstName || null,
+              status: 'pending',
+              contactId: contact.id || null,
+            })),
+          },
+        },
+        include: {
+          recipients: true,
+        },
+      });
+
       // Prepare emails with personalization
-      const emails = contactList.map((contact) => {
+      const emails = contactList.map((contact, index) => {
         const personalizedHtml = htmlContent
           .replace(/{{firstName}}/g, contact.firstName || '')
           .replace(/{{lastName}}/g, contact.lastName || '')
@@ -161,34 +190,83 @@ export async function emailRoutes(fastify: FastifyInstance) {
           subject,
           html: personalizedHtml,
           text: personalizedText,
+          _recipientId: emailRecord.recipients[index]?.id,
         };
       });
 
       // Send emails in batches (Resend supports up to 100 per batch)
       const results = [];
       const batchSize = 100;
-
-      for (let i = 0; i < emails.length; i += batchSize) {
-        const batch = emails.slice(i, i + batchSize);
-        try {
-          const batchResult = await resend.batch.send(batch);
-          results.push(batchResult);
-        } catch (error) {
-          results.push({ error, data: null });
-        }
-      }
-
-      // Count successes and failures
       let successCount = 0;
       const errors: unknown[] = [];
 
-      results.forEach((r) => {
-        if (r.data) {
-          successCount += Array.isArray(r.data) ? r.data.length : 1;
+      for (let i = 0; i < emails.length; i += batchSize) {
+        const batch = emails.slice(i, i + batchSize);
+        const batchWithoutMeta = batch.map(({ _recipientId, ...rest }) => rest);
+
+        try {
+          const batchResult = await resend.batch.send(batchWithoutMeta);
+          results.push(batchResult);
+
+          // Update recipient status in database
+          if (batchResult.data) {
+            const dataArray = Array.isArray(batchResult.data) ? batchResult.data : [batchResult.data];
+            for (let j = 0; j < dataArray.length; j++) {
+              const recipientId = batch[j]?._recipientId;
+              if (recipientId) {
+                await prisma.emailRecipient.update({
+                  where: { id: recipientId },
+                  data: {
+                    status: 'sent',
+                    resendId: dataArray[j]?.id || null,
+                  },
+                });
+              }
+              successCount++;
+            }
+          }
+          if (batchResult.error) {
+            errors.push(batchResult.error);
+            // Mark all in batch as failed
+            for (const email of batch) {
+              if (email._recipientId) {
+                await prisma.emailRecipient.update({
+                  where: { id: email._recipientId },
+                  data: {
+                    status: 'failed',
+                    error: String(batchResult.error),
+                  },
+                });
+              }
+            }
+          }
+        } catch (error) {
+          results.push({ error, data: null });
+          errors.push(error);
+          // Mark all in batch as failed
+          for (const email of batch) {
+            if (email._recipientId) {
+              await prisma.emailRecipient.update({
+                where: { id: email._recipientId },
+                data: {
+                  status: 'failed',
+                  error: String(error),
+                },
+              });
+            }
+          }
         }
-        if (r.error) {
-          errors.push(r.error);
-        }
+      }
+
+      // Update email record with final status
+      const failedCount = contactList.length - successCount;
+      await prisma.email.update({
+        where: { id: emailRecord.id },
+        data: {
+          status: failedCount === 0 ? 'sent' : failedCount === contactList.length ? 'failed' : 'partial_failure',
+          totalSent: successCount,
+          totalFailed: failedCount,
+        },
       });
 
       return reply.send({
@@ -196,7 +274,8 @@ export async function emailRoutes(fastify: FastifyInstance) {
         message: `Sent ${successCount} of ${contactList.length} emails successfully`,
         totalContacts: contactList.length,
         successCount,
-        failedCount: contactList.length - successCount,
+        failedCount,
+        emailId: emailRecord.id,
         errors: errors.length > 0 ? errors : undefined,
       });
     }
@@ -236,6 +315,7 @@ export async function emailRoutes(fastify: FastifyInstance) {
               totalTenants: { type: 'number' },
               successCount: { type: 'number' },
               failedCount: { type: 'number' },
+              emailId: { type: 'string' },
               errors: { type: 'array', items: { type: 'object' } },
             },
           },
@@ -257,11 +337,14 @@ export async function emailRoutes(fastify: FastifyInstance) {
           ...tenantFilter,
         },
         select: {
+          id: true,
           email: true,
           firstName: true,
           lastName: true,
+          tenantId: true,
           tenant: {
             select: {
+              id: true,
               name: true,
             },
           },
@@ -278,8 +361,32 @@ export async function emailRoutes(fastify: FastifyInstance) {
         ? `${fromName} <${FROM_EMAIL}>`
         : FROM_EMAIL;
 
+      // Create email record in database
+      const emailRecord = await prisma.email.create({
+        data: {
+          subject,
+          htmlContent,
+          fromName: fromName || null,
+          fromEmail: FROM_EMAIL,
+          status: 'sending',
+          sentById: request.user?.userId || null,
+          tenantId: null, // Sysadmin email
+          recipients: {
+            create: tenantAdmins.map((admin: { id: string; email: string; firstName: string; lastName: string; tenantId: string | null; tenant: { id: string; name: string } | null }) => ({
+              email: admin.email,
+              name: `${admin.firstName} ${admin.lastName}`,
+              status: 'pending',
+              tenantRecipientId: admin.tenant?.id || null,
+            })),
+          },
+        },
+        include: {
+          recipients: true,
+        },
+      });
+
       // Prepare emails with personalization
-      const emails = tenantAdmins.map((admin: { email: string; firstName: string | null; lastName: string | null; tenant: { name: string } | null }) => {
+      const emails = tenantAdmins.map((admin: { id: string; email: string; firstName: string; lastName: string; tenantId: string | null; tenant: { id: string; name: string } | null }, index: number) => {
         const personalizedHtml = htmlContent
           .replace(/{{firstName}}/g, admin.firstName || '')
           .replace(/{{lastName}}/g, admin.lastName || '')
@@ -300,34 +407,83 @@ export async function emailRoutes(fastify: FastifyInstance) {
           subject,
           html: personalizedHtml,
           text: personalizedText,
+          _recipientId: emailRecord.recipients[index]?.id,
         };
       });
 
       // Send emails in batches
       const results = [];
       const batchSize = 100;
-
-      for (let i = 0; i < emails.length; i += batchSize) {
-        const batch = emails.slice(i, i + batchSize);
-        try {
-          const batchResult = await resend.batch.send(batch);
-          results.push(batchResult);
-        } catch (error) {
-          results.push({ error, data: null });
-        }
-      }
-
-      // Count successes and failures
       let successCount = 0;
       const errors: unknown[] = [];
 
-      results.forEach((r) => {
-        if (r.data) {
-          successCount += Array.isArray(r.data) ? r.data.length : 1;
+      for (let i = 0; i < emails.length; i += batchSize) {
+        const batch = emails.slice(i, i + batchSize);
+        const batchWithoutMeta = batch.map(({ _recipientId, ...rest }) => rest);
+
+        try {
+          const batchResult = await resend.batch.send(batchWithoutMeta);
+          results.push(batchResult);
+
+          // Update recipient status in database
+          if (batchResult.data) {
+            const dataArray = Array.isArray(batchResult.data) ? batchResult.data : [batchResult.data];
+            for (let j = 0; j < dataArray.length; j++) {
+              const recipientId = batch[j]?._recipientId;
+              if (recipientId) {
+                await prisma.emailRecipient.update({
+                  where: { id: recipientId },
+                  data: {
+                    status: 'sent',
+                    resendId: dataArray[j]?.id || null,
+                  },
+                });
+              }
+              successCount++;
+            }
+          }
+          if (batchResult.error) {
+            errors.push(batchResult.error);
+            // Mark all in batch as failed
+            for (const email of batch) {
+              if (email._recipientId) {
+                await prisma.emailRecipient.update({
+                  where: { id: email._recipientId },
+                  data: {
+                    status: 'failed',
+                    error: String(batchResult.error),
+                  },
+                });
+              }
+            }
+          }
+        } catch (error) {
+          results.push({ error, data: null });
+          errors.push(error);
+          // Mark all in batch as failed
+          for (const email of batch) {
+            if (email._recipientId) {
+              await prisma.emailRecipient.update({
+                where: { id: email._recipientId },
+                data: {
+                  status: 'failed',
+                  error: String(error),
+                },
+              });
+            }
+          }
         }
-        if (r.error) {
-          errors.push(r.error);
-        }
+      }
+
+      // Update email record with final status
+      const failedCount = tenantAdmins.length - successCount;
+      await prisma.email.update({
+        where: { id: emailRecord.id },
+        data: {
+          status: failedCount === 0 ? 'sent' : failedCount === tenantAdmins.length ? 'failed' : 'partial_failure',
+          totalSent: successCount,
+          totalFailed: failedCount,
+        },
       });
 
       return reply.send({
@@ -335,7 +491,8 @@ export async function emailRoutes(fastify: FastifyInstance) {
         message: `Sent ${successCount} of ${tenantAdmins.length} emails successfully`,
         totalTenants: tenantAdmins.length,
         successCount,
-        failedCount: tenantAdmins.length - successCount,
+        failedCount,
+        emailId: emailRecord.id,
         errors: errors.length > 0 ? errors : undefined,
       });
     }
@@ -367,6 +524,7 @@ export async function emailRoutes(fastify: FastifyInstance) {
             properties: {
               success: { type: 'boolean' },
               id: { type: 'string' },
+              emailId: { type: 'string' },
             },
           },
         },
@@ -379,6 +537,28 @@ export async function emailRoutes(fastify: FastifyInstance) {
         ? `${fromName} <${FROM_EMAIL}>`
         : FROM_EMAIL;
 
+      // Create email record in database
+      const emailRecord = await prisma.email.create({
+        data: {
+          subject,
+          htmlContent,
+          fromName: fromName || null,
+          fromEmail: FROM_EMAIL,
+          status: 'sending',
+          sentById: request.user?.userId || null,
+          tenantId: request.user?.tenantId || null,
+          recipients: {
+            create: {
+              email: to,
+              status: 'pending',
+            },
+          },
+        },
+        include: {
+          recipients: true,
+        },
+      });
+
       try {
         const result = await resend.emails.send({
           from: fromAddress,
@@ -389,22 +569,211 @@ export async function emailRoutes(fastify: FastifyInstance) {
         });
 
         if (result.error) {
+          // Update status to failed
+          await prisma.email.update({
+            where: { id: emailRecord.id },
+            data: {
+              status: 'failed',
+              totalFailed: 1,
+            },
+          });
+          await prisma.emailRecipient.update({
+            where: { id: emailRecord.recipients[0]?.id },
+            data: {
+              status: 'failed',
+              error: String(result.error),
+            },
+          });
+
           return reply.status(400).send({
             success: false,
             error: result.error,
           });
         }
 
+        // Update status to sent
+        await prisma.email.update({
+          where: { id: emailRecord.id },
+          data: {
+            status: 'sent',
+            totalSent: 1,
+          },
+        });
+        await prisma.emailRecipient.update({
+          where: { id: emailRecord.recipients[0]?.id },
+          data: {
+            status: 'sent',
+            resendId: result.data?.id || null,
+          },
+        });
+
         return reply.send({
           success: true,
           id: result.data?.id,
+          emailId: emailRecord.id,
         });
       } catch (error) {
+        // Update status to failed
+        await prisma.email.update({
+          where: { id: emailRecord.id },
+          data: {
+            status: 'failed',
+            totalFailed: 1,
+          },
+        });
+        await prisma.emailRecipient.update({
+          where: { id: emailRecord.recipients[0]?.id },
+          data: {
+            status: 'failed',
+            error: String(error),
+          },
+        });
+
         return reply.status(500).send({
           success: false,
           error: String(error),
         });
       }
+    }
+  );
+
+  // GET /emails - Get email history
+  fastify.get(
+    '/emails',
+    {
+      preHandler: [authenticate, requireRole('sys_admin', 'tenant_admin', 'tenant_user')],
+      schema: {
+        tags: ['Emails'],
+        summary: 'Get email history',
+        description: 'Get list of sent emails. Sysadmin sees all, tenants see their own.',
+        security: [{ bearerAuth: [] }],
+        querystring: {
+          type: 'object',
+          properties: {
+            page: { type: 'number', default: 1 },
+            limit: { type: 'number', default: 20 },
+          },
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              emails: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: { type: 'string' },
+                    subject: { type: 'string' },
+                    fromName: { type: 'string' },
+                    fromEmail: { type: 'string' },
+                    status: { type: 'string' },
+                    totalSent: { type: 'number' },
+                    totalFailed: { type: 'number' },
+                    createdAt: { type: 'string' },
+                  },
+                },
+              },
+              total: { type: 'number' },
+              page: { type: 'number' },
+              limit: { type: 'number' },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      const { page = 1, limit = 20 } = request.query as { page?: number; limit?: number };
+      const skip = (page - 1) * limit;
+
+      const isSysAdmin = request.user?.role === 'sys_admin';
+      const tenantFilter = !isSysAdmin && request.user?.tenantId
+        ? { tenantId: request.user.tenantId }
+        : {};
+
+      const [emails, total] = await Promise.all([
+        prisma.email.findMany({
+          where: tenantFilter,
+          orderBy: { createdAt: 'desc' },
+          skip,
+          take: limit,
+          include: {
+            sentBy: {
+              select: {
+                firstName: true,
+                lastName: true,
+                email: true,
+              },
+            },
+            _count: {
+              select: {
+                recipients: true,
+              },
+            },
+          },
+        }),
+        prisma.email.count({ where: tenantFilter }),
+      ]);
+
+      return reply.send({
+        emails,
+        total,
+        page,
+        limit,
+      });
+    }
+  );
+
+  // GET /emails/:id - Get email details with recipients
+  fastify.get<{ Params: { id: string } }>(
+    '/emails/:id',
+    {
+      preHandler: [authenticate, requireRole('sys_admin', 'tenant_admin', 'tenant_user')],
+      schema: {
+        tags: ['Emails'],
+        summary: 'Get email details',
+        security: [{ bearerAuth: [] }],
+        params: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', format: 'uuid' },
+          },
+          required: ['id'],
+        },
+      },
+    },
+    async (request, reply) => {
+      const { id } = request.params;
+
+      const isSysAdmin = request.user?.role === 'sys_admin';
+      const tenantFilter = !isSysAdmin && request.user?.tenantId
+        ? { tenantId: request.user.tenantId }
+        : {};
+
+      const email = await prisma.email.findFirst({
+        where: {
+          id,
+          ...tenantFilter,
+        },
+        include: {
+          sentBy: {
+            select: {
+              firstName: true,
+              lastName: true,
+              email: true,
+            },
+          },
+          recipients: {
+            orderBy: { createdAt: 'asc' },
+          },
+        },
+      });
+
+      if (!email) {
+        return reply.status(404).send({ error: 'Email not found' });
+      }
+
+      return reply.send(email);
     }
   );
 }

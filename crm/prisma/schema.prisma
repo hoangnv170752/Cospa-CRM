@@ -39,6 +39,7 @@ model Tenant {
   chatSessions      ChatSession[]
   alertRules        AlertRule[]
   auditLogs         AuditLog[]
+  emails            Email[]
 
   @@map("tenants")
 }
@@ -82,6 +83,9 @@ model User {
   // Direct Messaging
   conversationParticipants ConversationParticipant[]
   sentMessages            DirectMessage[]
+
+  // Email History
+  sentEmails Email[]
 
   @@map("users")
 }
@@ -837,6 +841,78 @@ model ChatMessage {
   session   ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
 
   @@map("chat_messages")
+}
+
+// =====================
+// Email History
+// =====================
+
+model Email {
+  id          String      @id @default(uuid())
+  subject     String
+  htmlContent String      @db.Text
+  fromName    String?
+  fromEmail   String
+  status      EmailStatus @default(sent)
+  totalSent   Int         @default(0)
+  totalFailed Int         @default(0)
+  createdAt   DateTime    @default(now())
+
+  // Who sent the email
+  sentById String?
+  sentBy   User?   @relation(fields: [sentById], references: [id], onDelete: SetNull)
+
+  // Tenant context (null for sysadmin)
+  tenantId String?
+  tenant   Tenant? @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+
+  // Relations
+  recipients EmailRecipient[]
+
+  @@index([sentById, createdAt])
+  @@index([tenantId, createdAt])
+  @@map("emails")
+}
+
+model EmailRecipient {
+  id        String               @id @default(uuid())
+  email     String
+  name      String?
+  status    EmailRecipientStatus @default(pending)
+  resendId  String?              // Resend email ID for tracking
+  error     String?              // Error message if failed
+  openedAt  DateTime?
+  clickedAt DateTime?
+  createdAt DateTime             @default(now())
+
+  // Relations
+  emailId String
+  emailRecord   Email  @relation(fields: [emailId], references: [id], onDelete: Cascade)
+
+  // Optional link to contact or tenant
+  contactId String?
+  tenantRecipientId String?
+
+  @@index([emailId])
+  @@map("email_recipients")
+}
+
+enum EmailStatus {
+  draft
+  sending
+  sent
+  partial_failure
+  failed
+}
+
+enum EmailRecipientStatus {
+  pending
+  sent
+  delivered
+  opened
+  clicked
+  bounced
+  failed
 }
 
 // =====================

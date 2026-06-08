@@ -11,6 +11,7 @@ import { contactRoutes } from './routes/contacts.js';
 import { companyRoutes } from './routes/companies.js';
 import { dealRoutes } from './routes/deals.js';
 import { activityRoutes } from './routes/activities.js';
+import { emailRoutes } from './routes/emails.js';
 
 // ThingsBoard Integration Routes
 import { deviceAssignmentRoutes } from './routes/device-assignments.js';
@@ -425,6 +426,7 @@ Enterprise CRM REST API for IoT Dashboard with:
   await fastify.register(companyRoutes, { prefix: '/api' });
   await fastify.register(dealRoutes, { prefix: '/api' });
   await fastify.register(activityRoutes, { prefix: '/api' });
+  await fastify.register(emailRoutes, { prefix: '/api' });
 
   // ThingsBoard Integration Routes
   await fastify.register(deviceAssignmentRoutes, { prefix: '/api' });

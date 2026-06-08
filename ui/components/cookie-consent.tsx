@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
 import { Cookie } from "lucide-react";
@@ -8,14 +8,10 @@ import Link from "next/link";
 
 export function CookieConsent() {
   const t = useTranslations("landing.cookie");
-  const [showBanner, setShowBanner] = useState(false);
-
-  useEffect(() => {
-    const consent = localStorage.getItem("cookie-consent");
-    if (consent === null) {
-      setShowBanner(true);
-    }
-  }, []);
+  const [showBanner, setShowBanner] = useState(() => {
+    if (typeof window === "undefined") return false;
+    return localStorage.getItem("cookie-consent") === null;
+  });
 
   const handleAccept = () => {
     localStorage.setItem("cookie-consent", "accepted");

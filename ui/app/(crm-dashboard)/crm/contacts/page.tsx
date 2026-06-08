@@ -2,10 +2,12 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Loader2, ChevronLeft, ChevronRight, Search, Plus, Users, Mail, Phone, Building2, FileUp } from "lucide-react";
+import { Loader2, ChevronLeft, ChevronRight, Search, Plus, Users, Mail, Phone, Building2, FileUp, Send } from "lucide-react";
 import { ExcelImportDialog, ExcelImportConfig } from "@/components/excel-import-dialog";
+import { EmailComposeDialog } from "@/components/email-compose-dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
 import {
   Table,
   TableBody,
@@ -31,7 +33,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "sonner";
-import { fetchContacts, createContact, updateContact, deleteContact, Contact, fetchCompanies, Company } from "@/lib/crm";
+import { fetchContacts, createContact, updateContact, deleteContact, Contact, fetchCompanies, Company, sendContactsEmail } from "@/lib/crm";
 
 const PAGE_SIZE = 10;
 
@@ -51,6 +53,10 @@ export default function ContactsPage() {
   const [editingContact, setEditingContact] = useState<Contact | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [importDialogOpen, setImportDialogOpen] = useState(false);
+  const [emailDialogOpen, setEmailDialogOpen] = useState(false);
+
+  // Selection state for bulk email
+  const [selectedContacts, setSelectedContacts] = useState<Set<string>>(new Set());
 
   // Form state
   const [formFirstName, setFormFirstName] = useState("");
@@ -271,6 +277,12 @@ export default function ContactsPage() {
             </p>
           </div>
           <div className="flex items-center gap-2">
+            {selectedContacts.size > 0 && (
+              <Button variant="default" onClick={() => setEmailDialogOpen(true)} size="sm">
+                <Send className="h-4 w-4" />
+                Send Email ({selectedContacts.size})
+              </Button>
+            )}
             <Button variant="outline" onClick={() => setImportDialogOpen(true)} size="sm">
               <FileUp className="h-4 w-4" />
               {t("crm.import.button")}
@@ -308,6 +320,18 @@ export default function ContactsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-[40px]">
+                    <Checkbox
+                      checked={contacts.length > 0 && contacts.every(c => selectedContacts.has(c.id))}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedContacts(new Set(contacts.map(c => c.id)));
+                        } else {
+                          setSelectedContacts(new Set());
+                        }
+                      }}
+                    />
+                  </TableHead>
                   <TableHead>Name</TableHead>
                   <TableHead className="hidden sm:table-cell">{t("crm.contacts.email")}</TableHead>
                   <TableHead className="hidden md:table-cell">{t("crm.contacts.company")}</TableHead>
@@ -319,6 +343,20 @@ export default function ContactsPage() {
               <TableBody>
                 {contacts.map((contact) => (
                   <TableRow key={contact.id}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedContacts.has(contact.id)}
+                        onCheckedChange={(checked) => {
+                          const newSelected = new Set(selectedContacts);
+                          if (checked) {
+                            newSelected.add(contact.id);
+                          } else {
+                            newSelected.delete(contact.id);
+                          }
+                          setSelectedContacts(newSelected);
+                        }}
+                      />
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <div className="flex h-8 w-8 items-center justify-center rounded-full bg-muted text-xs font-medium">
@@ -539,6 +577,21 @@ export default function ContactsPage() {
           open={importDialogOpen}
           onOpenChange={setImportDialogOpen}
           config={importConfig}
+        />
+
+        {/* Email Compose Dialog */}
+        <EmailComposeDialog
+          open={emailDialogOpen}
+          onOpenChange={setEmailDialogOpen}
+          recipients={contacts.filter(c => selectedContacts.has(c.id))}
+          type="contacts"
+          onSend={async (data) => {
+            await sendContactsEmail({
+              contactIds: Array.from(selectedContacts),
+              ...data,
+            });
+            setSelectedContacts(new Set());
+          }}
         />
       </div>
     </div>

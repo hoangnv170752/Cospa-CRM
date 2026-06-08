@@ -67,6 +67,9 @@ import {
 import { toast } from "sonner";
 import { useCrmAuth } from "@/contexts/crm-auth-context";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { Checkbox } from "@/components/ui/checkbox";
+import { EmailComposeDialog } from "@/components/email-compose-dialog";
+import { sendTenantsEmail } from "@/lib/crm";
 
 const CRM_API_URL = process.env.NEXT_PUBLIC_CRM_API_URL || "http://localhost:5001/api";
 
@@ -144,6 +147,10 @@ export default function TenantsPage() {
     adminLastName: "",
   });
   const [showPassword, setShowPassword] = useState(false);
+
+  // Email state
+  const [selectedTenants, setSelectedTenants] = useState<Set<string>>(new Set());
+  const [showEmailDialog, setShowEmailDialog] = useState(false);
 
   // Chat state
   const [showChatDialog, setShowChatDialog] = useState(false);
@@ -478,10 +485,18 @@ export default function TenantsPage() {
             Manage organizations and approve registration requests
           </p>
         </div>
-        <Button onClick={() => setShowCreateDialog(true)}>
-          <Plus className="h-4 w-4 mr-2" />
-          Create Tenant
-        </Button>
+        <div className="flex items-center gap-2">
+          {selectedTenants.size > 0 && (
+            <Button variant="default" onClick={() => setShowEmailDialog(true)}>
+              <Send className="h-4 w-4 mr-2" />
+              Send Email ({selectedTenants.size})
+            </Button>
+          )}
+          <Button onClick={() => setShowCreateDialog(true)}>
+            <Plus className="h-4 w-4 mr-2" />
+            Create Tenant
+          </Button>
+        </div>
       </div>
 
       {/* Pending Approvals */}
@@ -581,6 +596,18 @@ export default function TenantsPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead className="w-[40px]">
+                    <Checkbox
+                      checked={tenants.length > 0 && tenants.every(t => selectedTenants.has(t.id))}
+                      onCheckedChange={(checked) => {
+                        if (checked) {
+                          setSelectedTenants(new Set(tenants.map(t => t.id)));
+                        } else {
+                          setSelectedTenants(new Set());
+                        }
+                      }}
+                    />
+                  </TableHead>
                   <TableHead>Organization</TableHead>
                   <TableHead>Admin</TableHead>
                   <TableHead>Plan</TableHead>
@@ -593,6 +620,20 @@ export default function TenantsPage() {
               <TableBody>
                 {tenants.map((tenant) => (
                   <TableRow key={tenant.id}>
+                    <TableCell>
+                      <Checkbox
+                        checked={selectedTenants.has(tenant.id)}
+                        onCheckedChange={(checked) => {
+                          const newSelected = new Set(selectedTenants);
+                          if (checked) {
+                            newSelected.add(tenant.id);
+                          } else {
+                            newSelected.delete(tenant.id);
+                          }
+                          setSelectedTenants(newSelected);
+                        }}
+                      />
+                    </TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <div className="h-8 w-8 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
@@ -882,6 +923,29 @@ export default function TenantsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Email Compose Dialog */}
+      <EmailComposeDialog
+        open={showEmailDialog}
+        onOpenChange={setShowEmailDialog}
+        recipients={tenants
+          .filter(t => selectedTenants.has(t.id))
+          .map(t => ({
+            id: t.id,
+            email: t.adminUser?.email || "",
+            firstName: t.adminUser?.firstName,
+            lastName: t.adminUser?.lastName,
+            name: t.name,
+          }))}
+        type="tenants"
+        onSend={async (data) => {
+          await sendTenantsEmail({
+            tenantIds: Array.from(selectedTenants),
+            ...data,
+          });
+          setSelectedTenants(new Set());
+        }}
+      />
 
       {/* Chat Dialog */}
       <Dialog open={showChatDialog} onOpenChange={setShowChatDialog}>

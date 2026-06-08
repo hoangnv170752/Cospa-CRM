@@ -1,6 +1,7 @@
 import { prisma } from '../services/prisma.js';
 import { hashPassword } from '../services/auth.js';
 import { authenticate, requireTenantAdmin, withTenantScope } from '../middleware/auth.js';
+import { uploadImage, deleteImage, extractPublicId } from '../services/cloudinary.js';
 export async function userRoutes(fastify) {
     // All routes require authentication
     fastify.addHook('preHandler', authenticate);
@@ -359,6 +360,184 @@ export async function userRoutes(fastify) {
             permissions: user?.permissions ?? [],
             updated: permissions.count,
         });
+    });
+    // POST /users/:id/avatar - Upload user avatar
+    fastify.post('/users/:id/avatar', {
+        schema: {
+            tags: ['Users'],
+            summary: 'Upload avatar',
+            description: 'Upload a profile photo for a user. Supports JPG, PNG, WebP, and GIF formats. Max size: 5MB.',
+            security: [{ bearerAuth: [] }],
+            params: {
+                type: 'object',
+                properties: {
+                    id: { type: 'string', format: 'uuid' },
+                },
+                required: ['id'],
+            },
+            consumes: ['multipart/form-data'],
+        },
+    }, async (request, reply) => {
+        // Check if user can upload avatar for this user
+        // Users can upload their own avatar, tenant_admin can upload for tenant users, sys_admin can upload for anyone
+        const targetUserId = request.params.id;
+        const currentUser = request.user;
+        if (!currentUser) {
+            return reply.status(401).send({ error: 'Unauthorized' });
+        }
+        // Get target user
+        const targetUser = await prisma.user.findUnique({
+            where: { id: targetUserId },
+        });
+        if (!targetUser) {
+            return reply.status(404).send({ error: 'User not found' });
+        }
+        // Permission checks:
+        // 1. Users can always upload their own avatar
+        // 2. SysAdmin can upload for anyone
+        // 3. TenantAdmin can upload for users in their tenant
+        const isOwnAvatar = currentUser.userId === targetUserId;
+        const isSysAdmin = currentUser.role === 'sys_admin';
+        const isTenantAdmin = currentUser.role === 'tenant_admin';
+        const isSameTenant = currentUser.tenantId === targetUser.tenantId;
+        if (!isOwnAvatar && !isSysAdmin && !(isTenantAdmin && isSameTenant)) {
+            return reply.status(403).send({ error: 'Forbidden: Cannot upload avatar for this user' });
+        }
+        // Get the uploaded file
+        const data = await request.file();
+        if (!data) {
+            return reply.status(400).send({ error: 'No file uploaded' });
+        }
+        // Validate file type
+        const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif'];
+        if (!allowedMimeTypes.includes(data.mimetype)) {
+            return reply.status(400).send({
+                error: 'Invalid file type',
+                message: 'Only JPG, PNG, WebP, and GIF images are allowed',
+            });
+        }
+        // Read file buffer
+        const chunks = [];
+        for await (const chunk of data.file) {
+            chunks.push(chunk);
+        }
+        const buffer = Buffer.concat(chunks);
+        // Validate file size (max 5MB)
+        const maxSize = 5 * 1024 * 1024;
+        if (buffer.length > maxSize) {
+            return reply.status(400).send({
+                error: 'File too large',
+                message: 'Maximum file size is 5MB',
+            });
+        }
+        try {
+            // Delete old avatar from Cloudinary if exists
+            if (targetUser.avatar) {
+                const oldPublicId = extractPublicId(targetUser.avatar);
+                if (oldPublicId) {
+                    await deleteImage(oldPublicId);
+                }
+            }
+            // Upload new avatar to Cloudinary
+            const result = await uploadImage(buffer, {
+                folder: 'crm-avatars',
+                publicId: `user-${targetUserId}`,
+            });
+            // Update user with new avatar URL
+            const updatedUser = await prisma.user.update({
+                where: { id: targetUserId },
+                data: { avatar: result.url },
+                select: {
+                    id: true,
+                    email: true,
+                    firstName: true,
+                    lastName: true,
+                    avatar: true,
+                },
+            });
+            return reply.send({
+                message: 'Avatar uploaded successfully',
+                avatar: result.url,
+                user: updatedUser,
+            });
+        }
+        catch (error) {
+            console.error('Avatar upload failed:', error);
+            return reply.status(500).send({
+                error: 'Upload failed',
+                message: error instanceof Error ? error.message : 'Failed to upload avatar',
+            });
+        }
+    });
+    // DELETE /users/:id/avatar - Remove user avatar
+    fastify.delete('/users/:id/avatar', {
+        schema: {
+            tags: ['Users'],
+            summary: 'Remove avatar',
+            description: 'Remove the profile photo for a user',
+            security: [{ bearerAuth: [] }],
+            params: {
+                type: 'object',
+                properties: {
+                    id: { type: 'string', format: 'uuid' },
+                },
+                required: ['id'],
+            },
+        },
+    }, async (request, reply) => {
+        const targetUserId = request.params.id;
+        const currentUser = request.user;
+        if (!currentUser) {
+            return reply.status(401).send({ error: 'Unauthorized' });
+        }
+        // Get target user
+        const targetUser = await prisma.user.findUnique({
+            where: { id: targetUserId },
+        });
+        if (!targetUser) {
+            return reply.status(404).send({ error: 'User not found' });
+        }
+        // Permission checks (same as upload)
+        const isOwnAvatar = currentUser.userId === targetUserId;
+        const isSysAdmin = currentUser.role === 'sys_admin';
+        const isTenantAdmin = currentUser.role === 'tenant_admin';
+        const isSameTenant = currentUser.tenantId === targetUser.tenantId;
+        if (!isOwnAvatar && !isSysAdmin && !(isTenantAdmin && isSameTenant)) {
+            return reply.status(403).send({ error: 'Forbidden: Cannot remove avatar for this user' });
+        }
+        if (!targetUser.avatar) {
+            return reply.status(400).send({ error: 'User has no avatar to remove' });
+        }
+        try {
+            // Delete from Cloudinary
+            const publicId = extractPublicId(targetUser.avatar);
+            if (publicId) {
+                await deleteImage(publicId);
+            }
+            // Update user to remove avatar
+            const updatedUser = await prisma.user.update({
+                where: { id: targetUserId },
+                data: { avatar: null },
+                select: {
+                    id: true,
+                    email: true,
+                    firstName: true,
+                    lastName: true,
+                    avatar: true,
+                },
+            });
+            return reply.send({
+                message: 'Avatar removed successfully',
+                user: updatedUser,
+            });
+        }
+        catch (error) {
+            console.error('Avatar removal failed:', error);
+            return reply.status(500).send({
+                error: 'Removal failed',
+                message: error instanceof Error ? error.message : 'Failed to remove avatar',
+            });
+        }
     });
 }
 //# sourceMappingURL=users.js.map

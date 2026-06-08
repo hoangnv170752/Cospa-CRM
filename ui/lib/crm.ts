@@ -570,3 +570,61 @@ export async function getCrmStats(): Promise<CrmStats> {
     },
   };
 }
+
+// =====================
+// Email API
+// =====================
+
+export interface SendEmailResponse {
+  success: boolean;
+  message: string;
+  totalContacts?: number;
+  totalTenants?: number;
+  successCount: number;
+  failedCount: number;
+  errors?: unknown[];
+}
+
+export interface SendContactsEmailData {
+  contactIds?: string[];
+  contacts?: { email: string; firstName?: string; lastName?: string }[];
+  subject: string;
+  htmlContent: string;
+  textContent?: string;
+  fromName?: string;
+}
+
+export interface SendTenantsEmailData {
+  tenantIds?: string[];
+  subject: string;
+  htmlContent: string;
+  textContent?: string;
+  fromName?: string;
+}
+
+export async function sendContactsEmail(data: SendContactsEmailData): Promise<SendEmailResponse> {
+  return crmFetch<SendEmailResponse>('/contacts/send-email', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function sendTenantsEmail(data: SendTenantsEmailData): Promise<SendEmailResponse> {
+  return crmFetch<SendEmailResponse>('/tenants/send-email', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function sendSingleEmail(data: {
+  to: string;
+  subject: string;
+  htmlContent: string;
+  textContent?: string;
+  fromName?: string;
+}): Promise<{ success: boolean; id?: string }> {
+  return crmFetch<{ success: boolean; id?: string }>('/emails/send', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}

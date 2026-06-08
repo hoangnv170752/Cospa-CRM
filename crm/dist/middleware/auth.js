@@ -10,10 +10,15 @@ export async function authenticate(request, reply) {
     }
 }
 // Role-based access control
+// sys_admin always has full access to all resources
 export function requireRole(...allowedRoles) {
     return async (request, reply) => {
         if (!request.user) {
             return reply.status(401).send({ error: 'Unauthorized' });
+        }
+        // SysAdmin bypasses all role checks - they have full platform access
+        if (request.user.role === 'sys_admin') {
+            return;
         }
         if (!allowedRoles.includes(request.user.role)) {
             return reply.status(403).send({

@@ -87,6 +87,9 @@ model User {
   // Email History
   sentEmails Email[]
 
+  @@index([tenantId])
+  @@index([role])
+  @@index([status])
   @@map("users")
 }
 
@@ -496,6 +499,8 @@ model Company {
   deviceAssignments DeviceAssignment[]
   assetAssignments  AssetAssignment[]
 
+  @@index([tenantId])
+  @@index([createdAt])
   @@map("companies")
 }
 
@@ -523,6 +528,8 @@ model Contact {
   deals      Deal[]
   activities Activity[]
 
+  @@index([companyId])
+  @@index([createdAt])
   @@map("contacts")
 }
 

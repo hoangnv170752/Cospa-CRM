@@ -26,6 +26,8 @@ const languages = [
   { code: "zh", label: "Chinese", flag: "ZH" },
   { code: "fr", label: "French", flag: "FR" },
   { code: "es", label: "Spanish", flag: "ES" },
+  { code: "vi", label: "Vietnamese", flag: "VI" },
+  { code: "tr", label: "Turkish", flag: "TR" },
 ];
 
 export function CrmHeader({ sidebarOpen, onToggleSidebar, onMobileMenuClick }: CrmHeaderProps) {

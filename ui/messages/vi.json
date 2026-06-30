@@ -251,6 +251,16 @@
       "french": "Tiếng Pháp",
       "spanish": "Tiếng Tây Ban Nha",
       "vietnamese": "Tiếng Việt"
+    },
+    "support": {
+      "title": "Liên hệ Hỗ trợ",
+      "description": "Chat với quản trị viên để được hỗ trợ, góp ý hoặc báo lỗi",
+      "placeholder": "Nhập tin nhắn...",
+      "noMessages": "Chưa có tin nhắn",
+      "startConversation": "Bắt đầu cuộc trò chuyện với đội hỗ trợ",
+      "admin": "QTV",
+      "yesterday": "Hôm qua",
+      "from": "Gửi từ"
     }
   },
   "crm": {
@@ -345,7 +355,8 @@
         "supplier": "Nhà cung cấp",
         "manufacturer": "Nhà sản xuất",
         "distributor": "Nhà phân phối",
-        "service_provider": "Nhà cung cấp dịch vụ"
+        "service_provider": "Nhà cung cấp dịch vụ",
+        "partner": "Đối tác"
       },
       "statuses": {
         "pending": "Chờ duyệt",

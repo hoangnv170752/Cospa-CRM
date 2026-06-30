@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
+import { AdminChatCard } from "@/components/admin-chat-card";
 
 interface Plan {
   id: string;
@@ -292,6 +293,7 @@ export default function SettingsPage() {
   }
 
   const showSubscription = profile?.subscription || authUser?.role !== "sys_admin";
+  const showSupportChat = authUser?.role !== "sys_admin";
 
   return (
     <div className="p-4 md:p-6">
@@ -566,6 +568,15 @@ export default function SettingsPage() {
               )}
             </CardContent>
           </Card>
+        )}
+
+        {/* Support Chat - Only for non-root users */}
+        {showSupportChat && profile && (
+          <AdminChatCard
+            userId={profile.id}
+            tenantId={profile.tenant?.id}
+            tenantName={profile.tenant?.name}
+          />
         )}
       </div>
     </div>

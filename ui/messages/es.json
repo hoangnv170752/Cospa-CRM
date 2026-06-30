@@ -250,6 +250,16 @@
       "chinese": "Chino (simplificado)",
       "french": "Francés",
       "spanish": "Español"
+    },
+    "support": {
+      "title": "Contactar Soporte",
+      "description": "Chatea con los administradores para obtener ayuda, dar comentarios o reportar errores",
+      "placeholder": "Escribe tu mensaje...",
+      "noMessages": "Sin mensajes aún",
+      "startConversation": "Inicia una conversación con nuestro equipo de soporte",
+      "admin": "Admin",
+      "yesterday": "Ayer",
+      "from": "Enviando como"
     }
   },
   "crm": {
@@ -344,7 +354,8 @@
         "supplier": "Proveedor",
         "manufacturer": "Fabricante",
         "distributor": "Distribuidor",
-        "service_provider": "Proveedor de servicios"
+        "service_provider": "Proveedor de servicios",
+        "partner": "Socio"
       },
       "statuses": {
         "pending": "Pendiente",

@@ -10,6 +10,7 @@ import {
 } from '../services/auth.js';
 import { prisma } from '../services/prisma.js';
 import { authenticate } from '../middleware/auth.js';
+import { sendWelcomeEmail } from '../services/email.js';
 
 interface AdminLoginBody {
   email: string;
@@ -294,6 +295,16 @@ export async function authRoutes(fastify: FastifyInstance) {
       // Generate token so user is logged in immediately
       const payload = createJwtPayload(user);
       const token = fastify.jwt.sign(payload);
+
+      // Send welcome email (non-blocking)
+      sendWelcomeEmail({
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        organizationName: tenant.name,
+      }).catch((err) => {
+        console.error('Failed to send welcome email:', err);
+      });
 
       return reply.status(201).send({
         message: 'Organization registered successfully',

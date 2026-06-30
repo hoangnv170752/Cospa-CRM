@@ -1,0 +1,493 @@
+{
+  "landing": {
+    "cookie": {
+      "title": "Cospa CRM'de Çerezler",
+      "description": "Dil tercihinizi hatırlamak için 1 çerez kullanıyoruz. İzleme veya reklam için kullanılmaz. Kabul edebilir veya reddedebilirsiniz — her iki seçenek de dikkate alınır.",
+      "learnMore": "Daha fazla bilgi",
+      "accept": "Kabul Et",
+      "reject": "Reddet"
+    },
+    "nav": {
+      "crmLogin": "CRM Girişi",
+      "signIn": "Giriş Yap"
+    },
+    "hero": {
+      "title": "Çok Kiracılı CRM Platformu",
+      "subtitle": "Şirketleri, kişileri, fırsatları, tedarikçileri ve sözleşmeleri kurumsal düzeyde güvenlik ve çok dilli destekle yönetmek için güçlü, beyaz etiketli bir CRM çözümü.",
+      "getStarted": "Başlayın",
+      "signInCrm": "CRM'e Giriş Yap"
+    },
+    "features": {
+      "title": "Güçlü Özellikler",
+      "subtitle": "Müşteri ilişkilerinizi etkili bir şekilde yönetmek için ihtiyacınız olan her şey",
+      "excelImport": {
+        "title": "Excel Toplu İçe Aktarma",
+        "description": "Akıllı sütun eşleme ve doğrulama ile Excel dosyalarından şirketleri, kişileri, ürünleri ve daha fazlasını içe aktarın."
+      },
+      "messaging": {
+        "title": "Kiracı-Yönetici Mesajlaşma",
+        "description": "Sorunsuz destek ve işbirliği için kiracılar ve yöneticiler arasında gerçek zamanlı iletişim."
+      },
+      "profileManagement": {
+        "title": "Profil ve Medya Yönetimi",
+        "description": "Avatar yüklemeleri, tercihler ve kapsamlı hesap ayarlarıyla kullanıcı profillerini yönetin."
+      },
+      "selfService": {
+        "title": "Self Servis Kayıt",
+        "description": "Kuruluşlar kayıt olabilir ve yönetici onayı bekleyebilir, bu da işe alım sürecini kolaylaştırır."
+      },
+      "auditLog": {
+        "title": "Denetim Günlüğü İzi",
+        "description": "Uyumluluk, güvenlik izleme ve hesap verebilirlik için eksiksiz aktivite takibi."
+      },
+      "mobileReady": {
+        "title": "Mobil Uyumlu Arayüz",
+        "description": "Masaüstü, tablet ve mobil cihazlarda sorunsuz çalışan duyarlı tasarım."
+      }
+    },
+    "benefits": {
+      "title": "Neden Cospa CRM?",
+      "subtitle": "Kurumsal gereksinimlerle modern işletmeler için tasarlandı",
+      "multiTenant": {
+        "title": "Çoklu Kiracılık",
+        "description": "Paylaşılan altyapı verimliliği ile her kuruluş için izole veri."
+      },
+      "whiteLabel": {
+        "title": "Beyaz Etiket",
+        "description": "Her kiracı için logolar, renkler ve alan adı ile özel markalama."
+      },
+      "rbac": {
+        "title": "Roller ve İzinler",
+        "description": "Sistem yöneticisi, kiracı yöneticisi ve kullanıcı rolleriyle ayrıntılı erişim kontrolü."
+      },
+      "i18n": {
+        "title": "Çoklu Dil",
+        "description": "İngilizce, Çince, Fransızca, İspanyolca ve daha fazlası için destek."
+      }
+    },
+    "targetUsers": {
+      "title": "Sektörünüz İçin Tasarlandı",
+      "subtitle": "Cospa CRM, sağlam müşteri yönetimine ihtiyaç duyan kuruluşlar için tasarlanmıştır",
+      "hardware": "Bayi ağlarını yöneten donanım üreticileri",
+      "integrators": "Müşteri dağıtımlarını koordine eden sistem entegratörleri",
+      "facilities": "Hizmet sözleşmelerini takip eden tesis ve operasyon ekipleri",
+      "resellers": "Envanter ve müşteri ilişkilerini yöneten cihaz satıcıları"
+    },
+    "stats": {
+      "companies": "1000+",
+      "companiesLabel": "Yönetilen Şirket",
+      "contacts": "10K+",
+      "contactsLabel": "Takip Edilen Kişi",
+      "deals": "$5M+",
+      "dealsLabel": "Fırsat Hattı",
+      "security": "SOC 2",
+      "securityLabel": "Uyumluluk Hazır"
+    },
+    "testimonials": {
+      "title": "Müşterilerimiz Ne Diyor",
+      "subtitle": "Dünya çapında işletmeler tarafından müşteri ilişkilerini yönetmek için güveniliyor",
+      "items": [
+        {
+          "name": "Nguyen Tuan",
+          "role": "CEO, TechViet Solutions",
+          "quote": "Cospa CRM bayi ağımızı yönetme şeklimizi dönüştürdü. Çok kiracılı özellik, donanım dağıtım işimiz için tam olarak ihtiyacımız olan şeydi."
+        },
+        {
+          "name": "Tran Huong",
+          "role": "Operasyon Müdürü, SmartHome Inc",
+          "quote": "Excel içe aktarma özelliği bize sayısız saat kazandırdı. 5000'den fazla kişiyi dakikalar içinde taşıdık. Sistem sezgisel ve ekibimiz hızla benimsedi."
+        },
+        {
+          "name": "Le Van",
+          "role": "Satış Direktörü, IoT Global",
+          "quote": "Sonunda B2B ilişkilerini anlayan bir CRM. Sözleşme yönetimi ve tedarikçi takip özellikleri işimiz için oyun değiştirici."
+        }
+      ]
+    },
+    "cta": {
+      "title": "CRM'inizi Dönüştürmeye Hazır mısınız?",
+      "subtitle": "Bugün müşteri ilişkilerinizi daha etkili bir şekilde yönetmeye başlayın.",
+      "register": "Kuruluşunuzu Kaydedin",
+      "existingUser": "Mevcut Kullanıcı Girişi"
+    },
+    "footer": {
+      "terms": "Hizmet Şartları",
+      "privacy": "Gizlilik Politikası",
+      "copyright": "© 2026 Cospa CRM. Tüm hakları saklıdır."
+    }
+  },
+  "common": {
+    "loading": "Yükleniyor...",
+    "error": "Hata",
+    "save": "Kaydet",
+    "cancel": "İptal",
+    "search": "Ara",
+    "searchByName": "İsme göre ara...",
+    "noResults": "Sonuç bulunamadı",
+    "noData": "Veri mevcut değil",
+    "page": "Sayfa",
+    "of": "/",
+    "previous": "Önceki",
+    "next": "Sonraki",
+    "all": "Tümü",
+    "online": "Çevrimiçi",
+    "offline": "Çevrimdışı",
+    "comingSoon": "Yakında!",
+    "type": "Tür",
+    "contactAdmin": "Yönetici ile iletişime geçin",
+    "dontHaveAccount": "Hesabınız yok mu?"
+  },
+  "nav": {
+    "iot": "Cospa CRM",
+    "dashboard": "Gösterge Paneli",
+    "devices": "Cihazlar",
+    "assets": "Varlıklar",
+    "settings": "Ayarlar",
+    "signOut": "Çıkış yap",
+    "feedback": "Geri Bildirim",
+    "docs": "Belgeler",
+    "ask": "Sor",
+    "crm": {
+      "title": "CRM",
+      "dashboard": "Gösterge Paneli",
+      "tenants": "Kiracılar",
+      "companies": "Şirketler",
+      "contacts": "Kişiler",
+      "products": "Ürünler",
+      "deals": "Fırsatlar",
+      "vendors": "Tedarikçiler",
+      "contracts": "Sözleşmeler",
+      "tickets": "Destek Talepleri",
+      "auditLogs": "Denetim Günlükleri",
+      "settings": "Ayarlar"
+    }
+  },
+  "auth": {
+    "signIn": "Giriş Yap",
+    "signInTitle": "Thingsboard hesabıyla giriş yapın",
+    "signInDescription": "Cospa CRM'e erişmek için kimlik bilgilerinizi girin",
+    "email": "E-posta",
+    "password": "Şifre",
+    "signingIn": "Giriş yapılıyor...",
+    "signInWithGoogle": "Google ile giriş yap",
+    "termsText": "Giriş yaparak şunları kabul etmiş olursunuz:",
+    "termsOfService": "Hizmet Şartları",
+    "and": "ve",
+    "privacyPolicy": "Gizlilik Politikası",
+    "crmLogin": "CRM Yönetici Girişi",
+    "iotLogin": "Cospa CRM Girişi"
+  },
+  "dashboard": {
+    "title": "Gösterge Paneli",
+    "welcomeBack": "Tekrar hoş geldiniz",
+    "overview": "CRM verilerinize ve aktivitelerinize genel bakış",
+    "totalDevices": "Toplam Cihaz",
+    "activeDevices": "Aktif Cihazlar",
+    "totalAssets": "Toplam Varlık",
+    "alerts": "Uyarılar",
+    "deviceStatus": "Cihaz Durumu",
+    "recentActivity": "Son Aktivite",
+    "devicesByProfile": "Profile Göre Cihazlar",
+    "devicesByProfileDesc": "Her profil türündeki cihaz sayısı",
+    "assetsByProfile": "Profile Göre Varlıklar",
+    "assetsByProfileDesc": "Her profil türündeki varlık sayısı"
+  },
+  "devices": {
+    "title": "Cihazlar",
+    "description": "Cihazlarınızı yönetin ve izleyin",
+    "devicesCount": "{count} cihaz",
+    "name": "Ad",
+    "label": "Etiket",
+    "profile": "Profil",
+    "status": "Durum",
+    "created": "Oluşturulma",
+    "allProfiles": "Tüm Profiller",
+    "allStatus": "Tüm Durumlar",
+    "noDevices": "Cihaz bulunamadı"
+  },
+  "assets": {
+    "title": "Varlıklar",
+    "description": "Varlıklarınızı yönetin ve takip edin",
+    "assetsCount": "{count} varlık",
+    "name": "Ad",
+    "label": "Etiket",
+    "profile": "Profil",
+    "created": "Oluşturulma",
+    "allProfiles": "Tüm Profiller",
+    "noAssets": "Varlık bulunamadı"
+  },
+  "assistant": {
+    "title": "Cospa Asistan",
+    "greeting": "Merhaba! Ben Cospa Asistanınızım. CRM verileriniz, müşterileriniz veya gösterge paneli özellikleri hakkında bana her şeyi sorabilirsiniz.",
+    "placeholder": "CRM verileriniz hakkında sorun...",
+    "comingSoonResponse": "Bu özellik yakında geliyor! Size müşteri içgörüleri, veri analizi ve CRM yönetimi konusunda yardımcı olabileceğim."
+  },
+  "settings": {
+    "title": "Ayarlar",
+    "description": "Profilinizi ve tercihlerinizi yönetin",
+    "editProfile": "Profili Düzenle",
+    "profile": {
+      "title": "Profil",
+      "description": "Hesap ayarlarınızı yönetin"
+    },
+    "notifications": {
+      "title": "Bildirimler",
+      "description": "Bildirim tercihlerini yapılandırın"
+    },
+    "security": {
+      "title": "Güvenlik",
+      "description": "Şifre ve kimlik doğrulama"
+    },
+    "appearance": {
+      "title": "Görünüm",
+      "description": "Gösterge paneli görünümünü özelleştirin"
+    },
+    "language": {
+      "title": "Dil ve Bölge",
+      "description": "Dilinizi ve saat diliminizi ayarlayın",
+      "selectLanguage": "Dil Seçin",
+      "english": "İngilizce",
+      "chinese": "Çince (Basitleştirilmiş)",
+      "french": "Fransızca",
+      "spanish": "İspanyolca"
+    },
+    "support": {
+      "title": "Destek ile İletişim",
+      "description": "Yardım, geri bildirim veya hata bildirimi için platform yöneticileriyle sohbet edin",
+      "placeholder": "Mesajınızı yazın...",
+      "noMessages": "Henüz mesaj yok",
+      "startConversation": "Destek ekibimizle bir sohbet başlatın",
+      "admin": "Yönetici",
+      "yesterday": "Dün",
+      "from": "Gönderen"
+    }
+  },
+  "crm": {
+    "dashboard": {
+      "title": "CRM Gösterge Paneli",
+      "description": "Müşteri ilişkilerinize genel bakış",
+      "totalCompanies": "Toplam Şirket",
+      "totalContacts": "Toplam Kişi",
+      "totalDeals": "Toplam Fırsat",
+      "dealValue": "Fırsat Değeri",
+      "openTickets": "Açık Talepler",
+      "activeContracts": "Aktif Sözleşmeler",
+      "dealsByStage": "Aşamaya Göre Fırsatlar",
+      "recentActivity": "Son Aktivite"
+    },
+    "companies": {
+      "title": "Şirketler",
+      "description": "İş müşterilerinizi yönetin",
+      "addCompany": "Şirket Ekle",
+      "editCompany": "Şirketi Düzenle",
+      "deleteCompany": "Şirketi Sil",
+      "name": "Şirket Adı",
+      "industry": "Sektör",
+      "website": "Web Sitesi",
+      "phone": "Telefon",
+      "address": "Adres",
+      "size": "Büyüklük",
+      "noCompanies": "Şirket bulunamadı",
+      "sizes": {
+        "small": "Küçük",
+        "medium": "Orta",
+        "large": "Büyük",
+        "enterprise": "Kurumsal"
+      }
+    },
+    "contacts": {
+      "title": "Kişiler",
+      "description": "İş kişilerinizi yönetin",
+      "addContact": "Kişi Ekle",
+      "editContact": "Kişiyi Düzenle",
+      "deleteContact": "Kişiyi Sil",
+      "firstName": "Ad",
+      "lastName": "Soyad",
+      "email": "E-posta",
+      "phone": "Telefon",
+      "position": "Pozisyon",
+      "company": "Şirket",
+      "notes": "Notlar",
+      "noContacts": "Kişi bulunamadı"
+    },
+    "deals": {
+      "title": "Fırsatlar",
+      "description": "Satış hattınızı takip edin",
+      "addDeal": "Fırsat Ekle",
+      "editDeal": "Fırsatı Düzenle",
+      "deleteDeal": "Fırsatı Sil",
+      "dealTitle": "Başlık",
+      "value": "Değer",
+      "stage": "Aşama",
+      "probability": "Olasılık",
+      "expectedClose": "Beklenen Kapanış",
+      "contact": "Kişi",
+      "company": "Şirket",
+      "noDeals": "Fırsat bulunamadı",
+      "stages": {
+        "lead": "Potansiyel",
+        "qualified": "Nitelikli",
+        "proposal": "Teklif",
+        "negotiation": "Müzakere",
+        "closed_won": "Kazanıldı",
+        "closed_lost": "Kaybedildi"
+      }
+    },
+    "vendors": {
+      "title": "Tedarikçiler",
+      "description": "Tedarikçilerinizi ve ortaklarınızı yönetin",
+      "addVendor": "Tedarikçi Ekle",
+      "editVendor": "Tedarikçiyi Düzenle",
+      "deleteVendor": "Tedarikçiyi Sil",
+      "name": "Tedarikçi Adı",
+      "code": "Kod",
+      "type": "Tür",
+      "email": "E-posta",
+      "phone": "Telefon",
+      "website": "Web Sitesi",
+      "address": "Adres",
+      "country": "Ülke",
+      "rating": "Değerlendirme",
+      "status": "Durum",
+      "noVendors": "Tedarikçi bulunamadı",
+      "types": {
+        "supplier": "Tedarikçi",
+        "manufacturer": "Üretici",
+        "distributor": "Distribütör",
+        "service_provider": "Hizmet Sağlayıcı",
+        "partner": "Ortak"
+      },
+      "statuses": {
+        "pending": "Beklemede",
+        "active": "Aktif",
+        "inactive": "Pasif",
+        "blacklisted": "Kara Liste"
+      }
+    },
+    "contracts": {
+      "title": "Sözleşmeler",
+      "description": "İş anlaşmalarınızı yönetin",
+      "addContract": "Sözleşme Ekle",
+      "editContract": "Sözleşmeyi Düzenle",
+      "deleteContract": "Sözleşmeyi Sil",
+      "contractNumber": "Sözleşme Numarası",
+      "contractTitle": "Başlık",
+      "type": "Tür",
+      "vendor": "Tedarikçi",
+      "company": "Şirket",
+      "startDate": "Başlangıç Tarihi",
+      "endDate": "Bitiş Tarihi",
+      "value": "Değer",
+      "status": "Durum",
+      "noContracts": "Sözleşme bulunamadı",
+      "types": {
+        "purchase": "Satın Alma",
+        "sales": "Satış",
+        "service": "Hizmet",
+        "maintenance": "Bakım",
+        "subscription": "Abonelik",
+        "nda": "Gizlilik Sözleşmesi",
+        "partnership": "Ortaklık"
+      },
+      "statuses": {
+        "draft": "Taslak",
+        "pending_approval": "Onay Bekliyor",
+        "active": "Aktif",
+        "expired": "Süresi Dolmuş",
+        "cancelled": "İptal Edildi"
+      }
+    },
+    "tickets": {
+      "title": "Destek Talepleri",
+      "description": "Müşteri destek taleplerini yönetin",
+      "addTicket": "Talep Ekle",
+      "editTicket": "Talebi Düzenle",
+      "ticketNumber": "Talep #",
+      "ticketTitle": "Başlık",
+      "priority": "Öncelik",
+      "status": "Durum",
+      "category": "Kategori",
+      "resolution": "Çözüm",
+      "noTickets": "Talep bulunamadı",
+      "priorities": {
+        "low": "Düşük",
+        "medium": "Orta",
+        "high": "Yüksek",
+        "critical": "Kritik"
+      },
+      "statuses": {
+        "open": "Açık",
+        "in_progress": "Devam Ediyor",
+        "waiting_on_customer": "Müşteri Bekleniyor",
+        "resolved": "Çözüldü",
+        "closed": "Kapatıldı"
+      }
+    },
+    "import": {
+      "button": "Excel İçe Aktar",
+      "title": "{entity} İçe Aktar",
+      "description": "Sisteme toplu {entity} aktarmak için bir Excel dosyası yükleyin.",
+      "dropzone": "Dosyanızı buraya bırakın veya göz atmak için tıklayın",
+      "supportedFormats": ".xlsx, .xls ve .csv dosyalarını destekler",
+      "downloadTemplate": "Şablonu İndir",
+      "columnMapping": "Sütun Eşleme",
+      "excelColumn": "Excel Sütunu",
+      "systemField": "Sistem Alanı",
+      "required": "Zorunlu",
+      "preview": "Önizleme",
+      "rows": "satır",
+      "import": "İçe Aktar",
+      "importing": "İçe aktarılıyor...",
+      "cancel": "İptal",
+      "success": "{count} öğe başarıyla içe aktarıldı",
+      "failed": "{count} öğe içe aktarılamadı",
+      "errors": "Hatalar",
+      "noFile": "Dosya seçilmedi",
+      "invalidFile": "Geçersiz dosya formatı",
+      "emptyFile": "Dosya boş",
+      "validationError": "Satır {row} doğrulama hatası: {error}",
+      "entities": {
+        "companies": "Şirketler",
+        "contacts": "Kişiler",
+        "products": "Ürünler",
+        "deals": "Fırsatlar",
+        "vendors": "Tedarikçiler",
+        "contracts": "Sözleşmeler"
+      },
+      "columns": {
+        "name": "Ad",
+        "industry": "Sektör",
+        "website": "Web Sitesi",
+        "phone": "Telefon",
+        "address": "Adres",
+        "size": "Büyüklük",
+        "firstName": "Ad",
+        "lastName": "Soyad",
+        "email": "E-posta",
+        "position": "Pozisyon",
+        "company": "Şirket",
+        "notes": "Notlar",
+        "sku": "Stok Kodu",
+        "description": "Açıklama",
+        "category": "Kategori",
+        "unitPrice": "Birim Fiyatı",
+        "stockQuantity": "Stok Miktarı",
+        "title": "Başlık",
+        "value": "Değer",
+        "stage": "Aşama",
+        "probability": "Olasılık",
+        "expectedCloseDate": "Beklenen Kapanış Tarihi",
+        "contact": "Kişi",
+        "code": "Kod",
+        "type": "Tür",
+        "country": "Ülke",
+        "rating": "Değerlendirme",
+        "status": "Durum",
+        "contractNumber": "Sözleşme Numarası",
+        "vendor": "Tedarikçi",
+        "startDate": "Başlangıç Tarihi",
+        "endDate": "Bitiş Tarihi"
+      }
+    }
+  }
+}

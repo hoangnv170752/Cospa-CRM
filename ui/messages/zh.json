@@ -250,6 +250,16 @@
       "chinese": "简体中文",
       "french": "法语",
       "spanish": "西班牙语"
+    },
+    "support": {
+      "title": "联系支持",
+      "description": "与平台管理员聊天，获取帮助、反馈或报告问题",
+      "placeholder": "输入消息...",
+      "noMessages": "暂无消息",
+      "startConversation": "开始与支持团队对话",
+      "admin": "管理员",
+      "yesterday": "昨天",
+      "from": "发送自"
     }
   },
   "crm": {
@@ -344,7 +354,8 @@
         "supplier": "供应商",
         "manufacturer": "制造商",
         "distributor": "分销商",
-        "service_provider": "服务提供商"
+        "service_provider": "服务提供商",
+        "partner": "合作伙伴"
       },
       "statuses": {
         "pending": "待审核",

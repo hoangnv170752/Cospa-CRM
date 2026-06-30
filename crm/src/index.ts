@@ -32,6 +32,7 @@ import { billingRoutes } from './routes/billing.js';
 import { notificationRoutes } from './routes/notifications.js';
 import { messagingRoutes } from './routes/messaging.js';
 import { auditLogRoutes } from './routes/audit-logs.js';
+import { supportRoutes } from './routes/support.js';
 
 // Services
 import { prisma } from './services/prisma.js';
@@ -133,6 +134,7 @@ Enterprise CRM REST API for IoT Dashboard with:
         { name: 'Feedback', description: 'User feedback and feature requests' },
         { name: 'Chat', description: 'AI assistant chat session history' },
         { name: 'Messaging', description: 'Direct messaging between users/tenants and SysAdmin' },
+        { name: 'Support', description: 'Simplified support chat for tenant users to contact administrators' },
       ],
       components: {
         securitySchemes: {
@@ -441,6 +443,9 @@ Enterprise CRM REST API for IoT Dashboard with:
 
   // Audit Logs Routes
   await fastify.register(auditLogRoutes, { prefix: '/api' });
+
+  // Support Chat Routes (simplified support for tenant users)
+  await fastify.register(supportRoutes, { prefix: '/api' });
 
   // Health check
   fastify.get('/health', {

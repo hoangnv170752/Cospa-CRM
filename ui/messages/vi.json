@@ -43,6 +43,10 @@
       "mobileReady": {
         "title": "Giao diện Di động",
         "description": "Thiết kế responsive hoạt động mượt mà trên máy tính, máy tính bảng và thiết bị di động."
+      },
+      "emailReceiving": {
+        "title": "Nhận Email",
+        "description": "Nhận và xử lý email đến qua webhook. Tự động thu thập yêu cầu hỗ trợ, tệp đính kèm chuyển tiếp và phản hồi từ khách hàng."
       }
     },
     "benefits": {
@@ -103,6 +107,19 @@
           "quote": "Cuối cùng cũng có một CRM hiểu về quan hệ B2B. Các tính năng quản lý hợp đồng và theo dõi nhà cung cấp thực sự là bước đột phá cho doanh nghiệp chúng tôi."
         }
       ]
+    },
+    "contact": {
+      "title": "Liên Hệ Đội Ngũ Phát Triển",
+      "subtitle": "Bạn có câu hỏi hoặc muốn tìm hiểu thêm? Gửi tin nhắn cho chúng tôi và chúng tôi sẽ phản hồi sớm nhất.",
+      "name": "Họ và Tên",
+      "namePlaceholder": "Nhập họ và tên của bạn",
+      "email": "Địa chỉ Email",
+      "emailPlaceholder": "email@cuaban.com",
+      "message": "Nội dung",
+      "messagePlaceholder": "Cho chúng tôi biết về dự án hoặc câu hỏi của bạn...",
+      "send": "Gửi Tin Nhắn",
+      "successTitle": "Đã Gửi Thành Công!",
+      "successMessage": "Cảm ơn bạn đã liên hệ. Đội ngũ của chúng tôi sẽ xem xét tin nhắn và phản hồi sớm."
     },
     "cta": {
       "title": "Sẵn sàng Chuyển đổi CRM của Bạn?",

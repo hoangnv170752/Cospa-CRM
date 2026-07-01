@@ -43,6 +43,10 @@
       "mobileReady": {
         "title": "Interfaz Móvil",
         "description": "Diseño responsive que funciona perfectamente en escritorio, tablet y móvil."
+      },
+      "emailReceiving": {
+        "title": "Recepción de correos",
+        "description": "Recibe y procesa correos entrantes a través de webhooks. Captura automáticamente solicitudes de soporte, archivos adjuntos reenviados y respuestas de clientes."
       }
     },
     "benefits": {
@@ -103,6 +107,19 @@
           "quote": "Por fin un CRM que entiende las relaciones B2B. Las funciones de gestión de contratos y seguimiento de proveedores son revolucionarias para nuestro negocio."
         }
       ]
+    },
+    "contact": {
+      "title": "Contacta con Nuestro Equipo",
+      "subtitle": "¿Tienes alguna pregunta o quieres saber más? Envíanos un mensaje y te responderemos pronto.",
+      "name": "Tu Nombre",
+      "namePlaceholder": "Ingresa tu nombre completo",
+      "email": "Correo Electrónico",
+      "emailPlaceholder": "tu@email.com",
+      "message": "Mensaje",
+      "messagePlaceholder": "Cuéntanos sobre tu proyecto o pregunta...",
+      "send": "Enviar Mensaje",
+      "successTitle": "¡Mensaje Enviado!",
+      "successMessage": "Gracias por contactarnos. Nuestro equipo revisará tu mensaje y te responderá pronto."
     },
     "cta": {
       "title": "¿Listo Para Transformar Tu CRM?",

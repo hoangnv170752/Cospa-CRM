@@ -40,6 +40,7 @@ model Tenant {
   alertRules        AlertRule[]
   auditLogs         AuditLog[]
   emails            Email[]
+  inboundEmails     InboundEmail[]
 
   @@map("tenants")
 }
@@ -919,6 +920,65 @@ enum EmailRecipientStatus {
   opened
   clicked
   bounced
+  failed
+}
+
+// =====================
+// Inbound (Received) Emails via Resend Webhooks
+// =====================
+
+model InboundEmail {
+  id            String   @id @default(uuid())
+  resendEmailId String   @unique // Resend's email_id
+  from          String
+  to            String[] // Array of recipient addresses
+  cc            String[] // CC recipients
+  bcc           String[] // BCC recipients
+  subject       String?
+  messageId     String?  // SMTP Message-ID header
+  receivedFor   String[] // Original forwarding addresses
+  htmlBody      String?  @db.Text
+  textBody      String?  @db.Text
+  headers       Json?    // Raw email headers
+  status        InboundEmailStatus @default(received)
+  processedAt   DateTime?
+  createdAt     DateTime @default(now())
+
+  // Optional association
+  tenantId String?
+  tenant   Tenant? @relation(fields: [tenantId], references: [id], onDelete: SetNull)
+
+  // Relations
+  attachments InboundEmailAttachment[]
+
+  @@index([from])
+  @@index([createdAt])
+  @@index([tenantId])
+  @@map("inbound_emails")
+}
+
+model InboundEmailAttachment {
+  id                 String @id @default(uuid())
+  resendAttachmentId String // Resend's attachment id
+  filename           String
+  contentType        String
+  contentDisposition String?
+  contentId          String?
+  createdAt          DateTime @default(now())
+
+  // Relations
+  inboundEmailId String
+  inboundEmail   InboundEmail @relation(fields: [inboundEmailId], references: [id], onDelete: Cascade)
+
+  @@index([inboundEmailId])
+  @@map("inbound_email_attachments")
+}
+
+enum InboundEmailStatus {
+  received
+  processing
+  processed
+  forwarded
   failed
 }
 

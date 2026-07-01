@@ -43,6 +43,10 @@
       "mobileReady": {
         "title": "Mobil Uyumlu Arayüz",
         "description": "Masaüstü, tablet ve mobil cihazlarda sorunsuz çalışan duyarlı tasarım."
+      },
+      "emailReceiving": {
+        "title": "E-posta Alma",
+        "description": "Webhook'lar aracılığıyla gelen e-postaları alın ve işleyin. Destek taleplerini, iletilen ekleri ve müşteri yanıtlarını otomatik olarak yakalayın."
       }
     },
     "benefits": {
@@ -103,6 +107,19 @@
           "quote": "Sonunda B2B ilişkilerini anlayan bir CRM. Sözleşme yönetimi ve tedarikçi takip özellikleri işimiz için oyun değiştirici."
         }
       ]
+    },
+    "contact": {
+      "title": "Ekibimizle İletişime Geçin",
+      "subtitle": "Bir sorunuz mu var veya daha fazla bilgi mi istiyorsunuz? Bize mesaj gönderin, en kısa sürede size döneceğiz.",
+      "name": "Adınız",
+      "namePlaceholder": "Tam adınızı girin",
+      "email": "E-posta Adresi",
+      "emailPlaceholder": "sizin@email.com",
+      "message": "Mesaj",
+      "messagePlaceholder": "Projeniz veya sorunuz hakkında bize bilgi verin...",
+      "send": "Mesaj Gönder",
+      "successTitle": "Mesaj Gönderildi!",
+      "successMessage": "Bizimle iletişime geçtiğiniz için teşekkür ederiz. Ekibimiz mesajınızı inceleyecek ve en kısa sürede size dönecektir."
     },
     "cta": {
       "title": "CRM'inizi Dönüştürmeye Hazır mısınız?",

@@ -33,6 +33,8 @@ import { notificationRoutes } from './routes/notifications.js';
 import { messagingRoutes } from './routes/messaging.js';
 import { auditLogRoutes } from './routes/audit-logs.js';
 import { supportRoutes } from './routes/support.js';
+import { webhookRoutes } from './routes/webhooks.js';
+import { contactFormRoutes } from './routes/contact-form.js';
 
 // Services
 import { prisma } from './services/prisma.js';
@@ -446,6 +448,12 @@ Enterprise CRM REST API for IoT Dashboard with:
 
   // Support Chat Routes (simplified support for tenant users)
   await fastify.register(supportRoutes, { prefix: '/api' });
+
+  // Webhook Routes (Resend inbound emails, delivery status)
+  await fastify.register(webhookRoutes, { prefix: '/api' });
+
+  // Contact Form (public, no auth)
+  await fastify.register(contactFormRoutes, { prefix: '/api' });
 
   // Health check
   fastify.get('/health', {

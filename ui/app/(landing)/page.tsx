@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -27,6 +30,10 @@ import {
   Palette,
   Smartphone,
   Languages,
+  Mail,
+  Send,
+  Loader2,
+  CheckCircle,
 } from "lucide-react";
 
 const languages = [
@@ -89,6 +96,11 @@ const features = [
     titleKey: "landing.features.mobileReady.title",
     descKey: "landing.features.mobileReady.description",
   },
+  {
+    icon: Mail,
+    titleKey: "landing.features.emailReceiving.title",
+    descKey: "landing.features.emailReceiving.description",
+  },
 ];
 
 const benefits = [
@@ -126,6 +138,46 @@ export default function LandingPage() {
   const { locale, setLocale } = useLocale();
 
   const currentLanguage = languages.find((l) => l.code === locale) || languages[0];
+
+  const [contactName, setContactName] = useState("");
+  const [contactEmail, setContactEmail] = useState("");
+  const [contactMessage, setContactMessage] = useState("");
+  const [contactSending, setContactSending] = useState(false);
+  const [contactSubmitted, setContactSubmitted] = useState(false);
+  const [contactError, setContactError] = useState("");
+
+  const CRM_API_URL = process.env.NEXT_PUBLIC_CRM_API_URL || "http://localhost:5001/api";
+
+  const handleContactSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setContactSending(true);
+    setContactError("");
+
+    try {
+      const res = await fetch(`${CRM_API_URL}/contact-form`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: contactName,
+          email: contactEmail,
+          message: contactMessage,
+        }),
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.error || "Failed to send message");
+      }
+
+      setContactSubmitted(true);
+    } catch (err) {
+      setContactError(
+        err instanceof Error ? err.message : "Failed to send message"
+      );
+    } finally {
+      setContactSending(false);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -350,6 +402,99 @@ export default function LandingPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Contact Dev Team Section */}
+      <section className="py-20 sm:py-24">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-2xl">
+            <div className="text-center">
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-indigo-100 dark:bg-indigo-900/50">
+                <Mail className="h-7 w-7 text-indigo-600 dark:text-indigo-400" />
+              </div>
+              <h2 className="mt-4 text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
+                {t("landing.contact.title")}
+              </h2>
+              <p className="mt-4 text-lg text-muted-foreground">
+                {t("landing.contact.subtitle")}
+              </p>
+            </div>
+
+            {contactSubmitted ? (
+              <div className="mt-10 flex flex-col items-center gap-4 rounded-2xl border border-green-200 bg-green-50 p-8 text-center dark:border-green-800 dark:bg-green-900/20">
+                <CheckCircle className="h-12 w-12 text-green-500" />
+                <h3 className="text-lg font-semibold text-foreground">
+                  {t("landing.contact.successTitle")}
+                </h3>
+                <p className="text-muted-foreground">
+                  {t("landing.contact.successMessage")}
+                </p>
+              </div>
+            ) : (
+              <form
+                onSubmit={handleContactSubmit}
+                className="mt-10 space-y-4 rounded-2xl border border-border bg-card p-6 shadow-sm sm:p-8"
+              >
+                <div className="grid gap-4 sm:grid-cols-2">
+                  <div className="space-y-2">
+                    <label htmlFor="contact-name" className="text-sm font-medium text-foreground">
+                      {t("landing.contact.name")}
+                    </label>
+                    <Input
+                      id="contact-name"
+                      value={contactName}
+                      onChange={(e) => setContactName(e.target.value)}
+                      placeholder={t("landing.contact.namePlaceholder")}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label htmlFor="contact-email" className="text-sm font-medium text-foreground">
+                      {t("landing.contact.email")}
+                    </label>
+                    <Input
+                      id="contact-email"
+                      type="email"
+                      value={contactEmail}
+                      onChange={(e) => setContactEmail(e.target.value)}
+                      placeholder={t("landing.contact.emailPlaceholder")}
+                      required
+                    />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <label htmlFor="contact-message" className="text-sm font-medium text-foreground">
+                    {t("landing.contact.message")}
+                  </label>
+                  <Textarea
+                    id="contact-message"
+                    value={contactMessage}
+                    onChange={(e) => setContactMessage(e.target.value)}
+                    placeholder={t("landing.contact.messagePlaceholder")}
+                    rows={4}
+                    required
+                  />
+                </div>
+                {contactError && (
+                  <p className="text-sm text-red-500">{contactError}</p>
+                )}
+                <Button
+                  type="submit"
+                  size="lg"
+                  className="w-full gap-2"
+                  disabled={contactSending}
+                >
+                  {contactSending ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Send className="h-4 w-4" />
+                  )}
+                  {t("landing.contact.send")}
+                </Button>
+              </form>
+            )}
           </div>
         </div>
       </section>

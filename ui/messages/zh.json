@@ -43,6 +43,10 @@
       "mobileReady": {
         "title": "移动端适配",
         "description": "响应式设计，在桌面、平板和移动设备上无缝运行。"
+      },
+      "emailReceiving": {
+        "title": "接收邮件",
+        "description": "通过Webhook接收和处理入站邮件。自动捕获支持请求、转发附件和客户回复。"
       }
     },
     "benefits": {
@@ -103,6 +107,19 @@
           "quote": "终于有一个理解 B2B 关系的 CRM 了。合同管理和供应商跟踪功能对我们的业务来说是颠覆性的。"
         }
       ]
+    },
+    "contact": {
+      "title": "联系我们的团队",
+      "subtitle": "有问题或想了解更多？给我们发消息，我们会尽快回复。",
+      "name": "您的姓名",
+      "namePlaceholder": "请输入您的全名",
+      "email": "电子邮箱",
+      "emailPlaceholder": "your@email.com",
+      "message": "消息内容",
+      "messagePlaceholder": "告诉我们关于您的项目或问题...",
+      "send": "发送消息",
+      "successTitle": "发送成功！",
+      "successMessage": "感谢您的联系。我们的团队会审阅您的消息并尽快回复。"
     },
     "cta": {
       "title": "准备好转型您的 CRM 了吗？",

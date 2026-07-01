@@ -43,6 +43,10 @@
       "mobileReady": {
         "title": "Mobile-Ready UI",
         "description": "Responsive design that works seamlessly across desktop, tablet, and mobile devices."
+      },
+      "emailReceiving": {
+        "title": "Email Receiving",
+        "description": "Receive and process inbound emails via webhooks. Automatically capture support requests, forwarded attachments, and customer replies."
       }
     },
     "benefits": {
@@ -103,6 +107,19 @@
           "quote": "Finally, a CRM that understands B2B relationships. The contract management and vendor tracking features are game-changers for our business."
         }
       ]
+    },
+    "contact": {
+      "title": "Get in Touch with Our Team",
+      "subtitle": "Have a question or want to learn more? Send us a message and we'll get back to you shortly.",
+      "name": "Your Name",
+      "namePlaceholder": "Enter your full name",
+      "email": "Email Address",
+      "emailPlaceholder": "your@email.com",
+      "message": "Message",
+      "messagePlaceholder": "Tell us about your project or question...",
+      "send": "Send Message",
+      "successTitle": "Message Sent!",
+      "successMessage": "Thank you for reaching out. Our team will review your message and get back to you soon."
     },
     "cta": {
       "title": "Ready to Transform Your CRM?",

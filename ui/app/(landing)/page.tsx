@@ -375,7 +375,7 @@ export default function LandingPage() {
                 <Button
                   size="lg"
                   variant="outline"
-                  className="border-white text-white hover:bg-white hover:text-indigo-600"
+                  className="border-indigo-200 text-white hover:bg-white hover:text-indigo-600 bg-indigo-500/30"
                 >
                   {t("landing.cta.existingUser")}
                 </Button>

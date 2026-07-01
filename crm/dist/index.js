@@ -28,6 +28,9 @@ import { billingRoutes } from './routes/billing.js';
 import { notificationRoutes } from './routes/notifications.js';
 import { messagingRoutes } from './routes/messaging.js';
 import { auditLogRoutes } from './routes/audit-logs.js';
+import { supportRoutes } from './routes/support.js';
+import { webhookRoutes } from './routes/webhooks.js';
+import { contactFormRoutes } from './routes/contact-form.js';
 // Services
 import { prisma } from './services/prisma.js';
 import { registerJwt } from './middleware/auth.js';
@@ -120,6 +123,7 @@ Enterprise CRM REST API for IoT Dashboard with:
                 { name: 'Feedback', description: 'User feedback and feature requests' },
                 { name: 'Chat', description: 'AI assistant chat session history' },
                 { name: 'Messaging', description: 'Direct messaging between users/tenants and SysAdmin' },
+                { name: 'Support', description: 'Simplified support chat for tenant users to contact administrators' },
             ],
             components: {
                 securitySchemes: {
@@ -420,6 +424,12 @@ Enterprise CRM REST API for IoT Dashboard with:
     await fastify.register(messagingRoutes, { prefix: '/api' });
     // Audit Logs Routes
     await fastify.register(auditLogRoutes, { prefix: '/api' });
+    // Support Chat Routes (simplified support for tenant users)
+    await fastify.register(supportRoutes, { prefix: '/api' });
+    // Webhook Routes (Resend inbound emails, delivery status)
+    await fastify.register(webhookRoutes, { prefix: '/api' });
+    // Contact Form (public, no auth)
+    await fastify.register(contactFormRoutes, { prefix: '/api' });
     // Health check
     fastify.get('/health', {
         schema: {

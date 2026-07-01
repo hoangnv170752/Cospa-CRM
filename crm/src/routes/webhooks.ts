@@ -37,10 +37,6 @@ export async function webhookRoutes(fastify: FastifyInstance) {
   fastify.post<{ Body: ResendWebhookEvent }>(
     '/webhooks/resend',
     {
-      config: {
-        // Skip authentication — webhooks come from Resend
-        rawBody: true,
-      },
       schema: {
         tags: ['Webhooks'],
         summary: 'Resend webhook endpoint',

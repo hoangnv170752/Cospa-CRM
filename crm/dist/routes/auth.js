@@ -1,6 +1,7 @@
 import { validateSysAdminLogin, validateUserLogin, validateThingsBoardToken, syncThingsBoardUser, createJwtPayload, getUserById, hashPassword, } from '../services/auth.js';
 import { prisma } from '../services/prisma.js';
 import { authenticate } from '../middleware/auth.js';
+import { sendWelcomeEmail } from '../services/email.js';
 export async function authRoutes(fastify) {
     // POST /auth/admin/login - SysAdmin login with email/password
     fastify.post('/auth/admin/login', {
@@ -235,6 +236,15 @@ export async function authRoutes(fastify) {
         // Generate token so user is logged in immediately
         const payload = createJwtPayload(user);
         const token = fastify.jwt.sign(payload);
+        // Send welcome email (non-blocking)
+        sendWelcomeEmail({
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            organizationName: tenant.name,
+        }).catch((err) => {
+            console.error('Failed to send welcome email:', err);
+        });
         return reply.status(201).send({
             message: 'Organization registered successfully',
             token,

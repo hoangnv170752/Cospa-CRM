@@ -6,7 +6,7 @@ export default function PrivacyPage() {
     <div className="min-h-screen bg-background">
       <div className="mx-auto max-w-3xl px-4 py-12">
         <Link
-          href="/signin"
+          href="/crm-signin"
           className="mb-8 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
@@ -18,7 +18,7 @@ export default function PrivacyPage() {
         </h1>
 
         <div className="prose prose-neutral dark:prose-invert max-w-none space-y-6 text-muted-foreground">
-          <p className="text-sm">Last updated: January 2025</p>
+          <p className="text-sm">Last updated: March 2026</p>
 
           <section>
             <h2 className="text-xl font-semibold text-foreground">

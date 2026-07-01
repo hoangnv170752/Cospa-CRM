@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { CrmSidebar } from "@/components/crm-sidebar";
 import { CrmHeader } from "@/components/crm-header";
+import { SupportChatFloatingButton } from "@/components/support-chat-floating-button";
 import {
   Sheet,
   SheetContent,
@@ -43,6 +44,9 @@ export function CrmDashboardLayout({ children, title }: CrmDashboardLayoutProps)
           {children}
         </main>
       </div>
+
+      {/* Support Chat Floating Button */}
+      <SupportChatFloatingButton />
     </div>
   );
 }

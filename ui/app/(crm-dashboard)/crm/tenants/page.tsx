@@ -157,13 +157,15 @@ export default function TenantsPage() {
   const [chatTenant, setChatTenant] = useState<Tenant | null>(null);
   const [chatMessages, setChatMessages] = useState<Array<{
     id: string;
-    role: "user" | "assistant" | "system";
     content: string;
+    senderId: string;
+    senderName: string;
     createdAt: string;
+    isOwn: boolean;
   }>>([]);
   const [chatInput, setChatInput] = useState("");
   const [isSendingChat, setIsSendingChat] = useState(false);
-  const [chatSessionId, setChatSessionId] = useState<string | null>(null);
+  const [conversationId, setConversationId] = useState<string | null>(null);
 
   // Check if user is sys_admin
   const isSysAdmin = user?.role === "sys_admin";
@@ -350,97 +352,124 @@ export default function TenantsPage() {
     setChatInput("");
     setShowChatDialog(true);
 
-    const sessionTitle = `Chat with ${tenant.name}`;
+    if (!tenant.adminUser?.id) {
+      toast.error("Tenant has no admin user to chat with");
+      return;
+    }
 
     try {
-      // First, try to find existing session for this tenant
-      const listRes = await fetch(`${CRM_API_URL}/chat/sessions?limit=100`, {
+      // Find existing support conversation with this tenant's admin user
+      const listRes = await fetch(`${CRM_API_URL}/messaging/conversations?limit=100`, {
         headers: { Authorization: `Bearer ${token}` },
       });
 
-      let sessionId: string | null = null;
+      let foundConversationId: string | null = null;
 
       if (listRes.ok) {
         const listData = await listRes.json();
-        // Find session with matching title (for this tenant)
-        const existingSession = listData.data?.find(
-          (s: { title: string }) => s.title === sessionTitle
+        // Find a support conversation where tenant admin is a participant
+        const existingConv = listData.data?.find(
+          (conv: { type: string; participants: Array<{ user: { id: string } }> }) =>
+            conv.type === "support" &&
+            conv.participants.some((p: { user: { id: string } }) => p.user.id === tenant.adminUser!.id)
         );
-        if (existingSession) {
-          sessionId = existingSession.id;
+        if (existingConv) {
+          foundConversationId = existingConv.id;
         }
       }
 
-      // If no existing session, create new one
-      if (!sessionId) {
-        const createRes = await fetch(`${CRM_API_URL}/chat/sessions`, {
+      // If no existing conversation, create one
+      if (!foundConversationId) {
+        const createRes = await fetch(`${CRM_API_URL}/messaging/conversations`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${token}`,
           },
-          body: JSON.stringify({ title: sessionTitle }),
+          body: JSON.stringify({
+            participantIds: [tenant.adminUser.id],
+            title: `Support: ${tenant.name}`,
+            type: "support",
+          }),
         });
 
         if (createRes.ok) {
-          const newSession = await createRes.json();
-          sessionId = newSession.id;
+          const newConv = await createRes.json();
+          foundConversationId = newConv.id;
         }
       }
 
-      if (sessionId) {
-        setChatSessionId(sessionId);
+      if (foundConversationId) {
+        setConversationId(foundConversationId);
 
         // Load existing messages
-        const sessionRes = await fetch(`${CRM_API_URL}/chat/sessions/${sessionId}`, {
+        const convRes = await fetch(`${CRM_API_URL}/messaging/conversations/${foundConversationId}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
-        if (sessionRes.ok) {
-          const sessionData = await sessionRes.json();
-          setChatMessages(sessionData.messages || []);
+        if (convRes.ok) {
+          const convData = await convRes.json();
+          const currentUserId = user?.id;
+          const msgs = (convData.messages || []).map((msg: {
+            id: string;
+            content: string;
+            senderId: string;
+            createdAt: string;
+            sender: { id: string; firstName: string; lastName: string };
+          }) => ({
+            id: msg.id,
+            content: msg.content,
+            senderId: msg.sender?.id || msg.senderId,
+            senderName: msg.sender ? `${msg.sender.firstName} ${msg.sender.lastName}`.trim() : "Unknown",
+            createdAt: msg.createdAt,
+            isOwn: msg.sender?.id === currentUserId || msg.senderId === currentUserId,
+          }));
+          setChatMessages(msgs);
         }
       }
     } catch (error) {
-      console.error("Failed to open chat session:", error);
+      console.error("Failed to open chat:", error);
       toast.error("Failed to start chat");
     }
   };
 
   const sendChatMessage = async () => {
-    if (!chatInput.trim() || !chatSessionId || isSendingChat) return;
+    if (!chatInput.trim() || !conversationId || isSendingChat) return;
 
     const content = chatInput.trim();
     setChatInput("");
     setIsSendingChat(true);
 
-    // Add user message immediately
-    const userMessage = {
+    // Optimistic update
+    const tempMessage = {
       id: `temp-${Date.now()}`,
-      role: "user" as const,
       content,
+      senderId: user?.id || "",
+      senderName: "You",
       createdAt: new Date().toISOString(),
+      isOwn: true,
     };
-    setChatMessages(prev => [...prev, userMessage]);
+    setChatMessages(prev => [...prev, tempMessage]);
 
     try {
-      // Send via REST API
-      const response = await fetch(`${CRM_API_URL}/chat/sessions/${chatSessionId}/messages`, {
+      const response = await fetch(`${CRM_API_URL}/messaging/conversations/${conversationId}/messages`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          role: "user",
-          content,
-        }),
+        body: JSON.stringify({ content }),
       });
 
       if (response.ok) {
         const savedMessage = await response.json();
-        // Update temp message with real ID
         setChatMessages(prev =>
-          prev.map(msg => msg.id === userMessage.id ? { ...msg, id: savedMessage.id } : msg)
+          prev.map(msg => msg.id === tempMessage.id ? {
+            ...msg,
+            id: savedMessage.id,
+            senderName: savedMessage.sender
+              ? `${savedMessage.sender.firstName} ${savedMessage.sender.lastName}`.trim()
+              : "You",
+          } : msg)
         );
       } else {
         throw new Error("Failed to send message");
@@ -448,8 +477,7 @@ export default function TenantsPage() {
     } catch (error) {
       console.error("Failed to send message:", error);
       toast.error("Failed to send message");
-      // Remove temp message on error
-      setChatMessages(prev => prev.filter(msg => msg.id !== userMessage.id));
+      setChatMessages(prev => prev.filter(msg => msg.id !== tempMessage.id));
     } finally {
       setIsSendingChat(false);
     }
@@ -953,8 +981,8 @@ export default function TenantsPage() {
           <DialogHeader className="px-4 py-3 border-b">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
-                  <MessageCircle className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                <div className="h-10 w-10 rounded-full bg-indigo-100 dark:bg-indigo-900 flex items-center justify-center">
+                  <MessageCircle className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                 </div>
                 <div>
                   <DialogTitle>Chat with {chatTenant?.name}</DialogTitle>
@@ -986,23 +1014,28 @@ export default function TenantsPage() {
                 chatMessages.map((msg) => (
                   <div
                     key={msg.id}
-                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                    className={`flex ${msg.isOwn ? "justify-end" : "justify-start"}`}
                   >
-                    <div
-                      className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                        msg.role === "user"
-                          ? "bg-blue-600 text-white"
-                          : msg.role === "system"
-                          ? "bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-200"
-                          : "bg-muted"
-                      }`}
-                    >
-                      <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
-                      <p className={`text-[10px] mt-1 ${
-                        msg.role === "user" ? "text-blue-200" : "text-muted-foreground"
-                      }`}>
-                        {new Date(msg.createdAt).toLocaleTimeString()}
-                      </p>
+                    <div className="flex flex-col max-w-[80%]">
+                      {!msg.isOwn && (
+                        <span className="text-[10px] text-muted-foreground mb-0.5">
+                          {msg.senderName}
+                        </span>
+                      )}
+                      <div
+                        className={`rounded-lg px-4 py-2 ${
+                          msg.isOwn
+                            ? "bg-indigo-600 text-white"
+                            : "bg-muted"
+                        }`}
+                      >
+                        <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                        <p className={`text-[10px] mt-1 ${
+                          msg.isOwn ? "text-indigo-200" : "text-muted-foreground"
+                        }`}>
+                          {new Date(msg.createdAt).toLocaleTimeString()}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 ))

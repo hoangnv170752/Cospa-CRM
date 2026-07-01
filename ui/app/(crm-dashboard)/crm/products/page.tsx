@@ -150,7 +150,7 @@ export default function ProductsPage() {
       const data: PaginatedResponse = await response.json();
       setProducts(data.data);
     } catch (error) {
-      toast.error("Failed to load products");
+      toast.error(t("crm.products.noProducts"));
     } finally {
       setIsLoading(false);
     }
@@ -231,7 +231,7 @@ export default function ProductsPage() {
       }
 
       toast.success(
-        editingProduct ? "Product updated successfully" : "Product created successfully"
+        editingProduct ? t("crm.products.updateSuccess") : t("crm.products.createSuccess")
       );
       setShowDialog(false);
       resetForm();
@@ -245,7 +245,7 @@ export default function ProductsPage() {
 
   const handleDelete = async (product: Product) => {
     if (!token) return;
-    if (!confirm(`Are you sure you want to delete "${product.name}"?`)) return;
+    if (!confirm(t("crm.products.confirmDelete", { name: product.name }))) return;
 
     try {
       const response = await fetch(`${CRM_API_URL}/items/${product.id}`, {
@@ -255,10 +255,10 @@ export default function ProductsPage() {
 
       if (!response.ok) throw new Error("Failed to delete product");
 
-      toast.success("Product deleted successfully");
+      toast.success(t("crm.products.deleteSuccess"));
       fetchProducts();
     } catch (error) {
-      toast.error("Failed to delete product");
+      toast.error(t("crm.products.deleteProduct"));
     }
   };
 
@@ -362,9 +362,9 @@ export default function ProductsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold">Products</h1>
+          <h1 className="text-2xl font-bold">{t("crm.products.title")}</h1>
           <p className="text-muted-foreground">
-            Manage your product catalog and inventory
+            {t("crm.products.description")}
           </p>
         </div>
         <div className="flex items-center gap-2">
@@ -374,7 +374,7 @@ export default function ProductsPage() {
           </Button>
           <Button onClick={openCreateDialog}>
             <Plus className="h-4 w-4 mr-2" />
-            Add Product
+            {t("crm.products.addProduct")}
           </Button>
         </div>
       </div>
@@ -386,7 +386,7 @@ export default function ProductsPage() {
             <div className="relative flex-1 max-w-sm">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input
-                placeholder="Search products..."
+                placeholder={t("crm.products.searchProducts")}
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 className="pl-10"
@@ -397,10 +397,10 @@ export default function ProductsPage() {
                 <SelectValue placeholder="Status" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Status</SelectItem>
-                <SelectItem value="active">Active</SelectItem>
-                <SelectItem value="inactive">Inactive</SelectItem>
-                <SelectItem value="discontinued">Discontinued</SelectItem>
+                <SelectItem value="all">{t("crm.products.allStatus")}</SelectItem>
+                <SelectItem value="active">{t("crm.products.statuses.active")}</SelectItem>
+                <SelectItem value="inactive">{t("crm.products.statuses.discontinued")}</SelectItem>
+                <SelectItem value="discontinued">{t("crm.products.statuses.discontinued")}</SelectItem>
               </SelectContent>
             </Select>
             <Select value={categoryFilter} onValueChange={(v) => v && setCategoryFilter(v)}>
@@ -408,7 +408,7 @@ export default function ProductsPage() {
                 <SelectValue placeholder="Category" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="all">{t("crm.products.allCategories")}</SelectItem>
                 {categories.map((cat) => (
                   <SelectItem key={cat} value={cat}>
                     {cat}
@@ -423,9 +423,9 @@ export default function ProductsPage() {
       {/* Products Table */}
       <Card>
         <CardHeader>
-          <CardTitle>Product Catalog</CardTitle>
+          <CardTitle>{t("crm.products.productCatalog")}</CardTitle>
           <CardDescription>
-            {products.length} products found
+            {t("crm.products.productsFound", { count: products.length })}
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -436,22 +436,22 @@ export default function ProductsPage() {
           ) : products.length === 0 ? (
             <div className="text-center py-8">
               <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">No products found</p>
+              <p className="text-muted-foreground">{t("crm.products.noProducts")}</p>
               <Button onClick={openCreateDialog} className="mt-4">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Your First Product
+                {t("crm.products.addFirst")}
               </Button>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Product</TableHead>
-                  <TableHead>SKU</TableHead>
-                  <TableHead>Category</TableHead>
-                  <TableHead>Price</TableHead>
-                  <TableHead>Vendor</TableHead>
-                  <TableHead>Status</TableHead>
+                  <TableHead>{t("crm.products.product")}</TableHead>
+                  <TableHead>{t("crm.products.sku")}</TableHead>
+                  <TableHead>{t("crm.products.category")}</TableHead>
+                  <TableHead>{t("crm.products.price")}</TableHead>
+                  <TableHead>{t("crm.products.vendor")}</TableHead>
+                  <TableHead>{t("crm.products.status")}</TableHead>
                   <TableHead className="w-10"></TableHead>
                 </TableRow>
               </TableHeader>
@@ -504,14 +504,14 @@ export default function ProductsPage() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => openEditDialog(product)}>
                             <Edit className="h-4 w-4 mr-2" />
-                            Edit
+                            {t("crm.products.editProduct")}
                           </DropdownMenuItem>
                           <DropdownMenuItem
                             onClick={() => handleDelete(product)}
                             className="text-red-600"
                           >
                             <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
+                            {t("crm.products.deleteProduct")}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -529,19 +529,19 @@ export default function ProductsPage() {
         <DialogContent className="max-w-lg">
           <DialogHeader>
             <DialogTitle>
-              {editingProduct ? "Edit Product" : "Add Product"}
+              {editingProduct ? t("crm.products.editProduct") : t("crm.products.addProduct")}
             </DialogTitle>
             <DialogDescription>
               {editingProduct
-                ? "Update product information"
-                : "Add a new product to your catalog"}
+                ? t("crm.products.updateDescription")
+                : t("crm.products.addDescription")}
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit}>
             <div className="space-y-4 py-4">
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name">Product Name *</Label>
+                  <Label htmlFor="name">{t("crm.products.name")} *</Label>
                   <Input
                     id="name"
                     value={formData.name}
@@ -552,7 +552,7 @@ export default function ProductsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="sku">SKU *</Label>
+                  <Label htmlFor="sku">{t("crm.products.sku")} *</Label>
                   <Input
                     id="sku"
                     value={formData.sku}
@@ -565,7 +565,7 @@ export default function ProductsPage() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description">{t("crm.products.description_field")}</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
@@ -578,7 +578,7 @@ export default function ProductsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="category">Category</Label>
+                  <Label htmlFor="category">{t("crm.products.category")}</Label>
                   <Select
                     value={formData.category}
                     onValueChange={(value) =>
@@ -586,7 +586,7 @@ export default function ProductsPage() {
                     }
                   >
                     <SelectTrigger>
-                      <SelectValue placeholder="Select category" />
+                      <SelectValue placeholder={t("crm.products.selectCategory")} />
                     </SelectTrigger>
                     <SelectContent>
                       {categories.map((cat) => (
@@ -598,7 +598,7 @@ export default function ProductsPage() {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="status">Status</Label>
+                  <Label htmlFor="status">{t("crm.products.status")}</Label>
                   <Select
                     value={formData.status}
                     onValueChange={(value) =>
@@ -609,10 +609,10 @@ export default function ProductsPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="draft">Draft</SelectItem>
-                      <SelectItem value="active">Active</SelectItem>
-                      <SelectItem value="discontinued">Discontinued</SelectItem>
-                      <SelectItem value="archived">Archived</SelectItem>
+                      <SelectItem value="draft">{t("crm.products.statuses.draft")}</SelectItem>
+                      <SelectItem value="active">{t("crm.products.statuses.active")}</SelectItem>
+                      <SelectItem value="discontinued">{t("crm.products.statuses.discontinued")}</SelectItem>
+                      <SelectItem value="archived">{t("crm.products.statuses.archived")}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -620,7 +620,7 @@ export default function ProductsPage() {
 
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="unitPrice">Unit Price *</Label>
+                  <Label htmlFor="unitPrice">{t("crm.products.unitPrice")} *</Label>
                   <Input
                     id="unitPrice"
                     type="number"
@@ -634,7 +634,7 @@ export default function ProductsPage() {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="currency">Currency</Label>
+                  <Label htmlFor="currency">{t("crm.products.currency")}</Label>
                   <Select
                     value={formData.currency}
                     onValueChange={(value) =>
@@ -660,11 +660,11 @@ export default function ProductsPage() {
                 variant="outline"
                 onClick={() => setShowDialog(false)}
               >
-                Cancel
+                {t("common.cancel")}
               </Button>
               <Button type="submit" disabled={isSubmitting}>
                 {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
-                {editingProduct ? "Update" : "Create"}
+                {editingProduct ? t("crm.products.editProduct") : t("crm.products.addProduct")}
               </Button>
             </DialogFooter>
           </form>

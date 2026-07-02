@@ -11,6 +11,7 @@ import {
 import { prisma } from '../services/prisma.js';
 import { authenticate } from '../middleware/auth.js';
 import { sendWelcomeEmail } from '../services/email.js';
+import { createAuditLog } from '../services/audit.js';
 
 interface AdminLoginBody {
   email: string;
@@ -83,6 +84,16 @@ export async function authRoutes(fastify: FastifyInstance) {
 
       const payload = createJwtPayload(user);
       const token = fastify.jwt.sign(payload);
+
+      // Audit log - SysAdmin login
+      createAuditLog(request, {
+        action: 'login',
+        resource: 'auth',
+        resourceId: user.id,
+        userId: user.id,
+        tenantId: user.tenantId || undefined,
+        newValues: { email: user.email, role: user.role },
+      }).catch((err) => console.error('Audit log error:', err));
 
       return reply.send({
         token,
@@ -160,8 +171,27 @@ export async function authRoutes(fastify: FastifyInstance) {
         });
       }
 
+      // Check if 2FA is enabled
+      if (result.user.twoFactorEnabled) {
+        return reply.send({
+          requiresTwoFactor: true,
+          email: result.user.email,
+          message: 'Two-factor authentication required',
+        });
+      }
+
       const payload = createJwtPayload(result.user);
       const token = fastify.jwt.sign(payload);
+
+      // Audit log - User login
+      createAuditLog(request, {
+        action: 'login',
+        resource: 'auth',
+        resourceId: result.user.id,
+        userId: result.user.id,
+        tenantId: result.user.tenantId || undefined,
+        newValues: { email: result.user.email, role: result.user.role },
+      }).catch((err) => console.error('Audit log error:', err));
 
       return reply.send({
         token,
@@ -776,6 +806,96 @@ export async function authRoutes(fastify: FastifyInstance) {
         avatar: updatedUser.avatar,
         role: updatedUser.role,
         updatedAt: updatedUser.updatedAt.toISOString(),
+      });
+    }
+  );
+
+  // PUT /auth/me/2fa - Enable/disable two-factor authentication
+  fastify.put<{
+    Body: {
+      enabled: boolean;
+      password?: string;
+    };
+  }>(
+    '/auth/me/2fa',
+    {
+      preHandler: [authenticate],
+      schema: {
+        tags: ['Auth'],
+        summary: 'Toggle two-factor authentication',
+        description: 'Enable or disable two-factor authentication for the current user. Requires password verification.',
+        security: [{ bearerAuth: [] }],
+        body: {
+          type: 'object',
+          required: ['enabled'],
+          properties: {
+            enabled: { type: 'boolean', description: 'Enable or disable 2FA' },
+            password: { type: 'string', minLength: 8, description: 'Current password for verification' },
+          },
+        },
+        response: {
+          200: {
+            type: 'object',
+            properties: {
+              message: { type: 'string' },
+              twoFactorEnabled: { type: 'boolean' },
+            },
+          },
+          400: {
+            type: 'object',
+            properties: {
+              error: { type: 'string' },
+              message: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
+    async (request, reply) => {
+      if (!request.user) {
+        return reply.status(401).send({ error: 'Unauthorized' });
+      }
+
+      const { enabled, password } = request.body;
+
+      // Get current user
+      const user = await prisma.user.findUnique({
+        where: { id: request.user.userId },
+      });
+
+      if (!user) {
+        return reply.status(404).send({ error: 'User not found' });
+      }
+
+      // If user has password, verify it before changing 2FA settings
+      if (user.passwordHash && enabled !== user.twoFactorEnabled) {
+        if (!password) {
+          return reply.status(400).send({
+            error: 'Bad Request',
+            message: 'Password is required to change 2FA settings',
+          });
+        }
+
+        const { verifyPassword } = await import('../services/auth.js');
+        const isValid = await verifyPassword(password, user.passwordHash);
+
+        if (!isValid) {
+          return reply.status(400).send({
+            error: 'Bad Request',
+            message: 'Invalid password',
+          });
+        }
+      }
+
+      // Update 2FA setting
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { twoFactorEnabled: enabled },
+      });
+
+      return reply.send({
+        message: enabled ? 'Two-factor authentication enabled' : 'Two-factor authentication disabled',
+        twoFactorEnabled: enabled,
       });
     }
   );

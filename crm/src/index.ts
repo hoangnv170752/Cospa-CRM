@@ -23,6 +23,7 @@ import { chatRoutes } from './routes/chat.js';
 
 // Enterprise Routes
 import { authRoutes } from './routes/auth.js';
+import { otpRoutes } from './routes/otp.js';
 import { tenantRoutes } from './routes/tenants.js';
 import { userRoutes } from './routes/users.js';
 import { vendorRoutes } from './routes/vendors.js';
@@ -415,6 +416,7 @@ Enterprise CRM REST API for IoT Dashboard with:
 
   // Auth Routes (no prefix)
   await fastify.register(authRoutes, { prefix: '/api' });
+  await fastify.register(otpRoutes, { prefix: '/api' });
 
   // Enterprise Routes
   await fastify.register(tenantRoutes, { prefix: '/api' });

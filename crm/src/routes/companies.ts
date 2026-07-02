@@ -2,6 +2,7 @@ import { FastifyInstance } from 'fastify';
 import { prisma } from '../services/prisma.js';
 import { CompanySize } from '@prisma/client';
 import { authenticate, withTenantScope, requireRole } from '../middleware/auth.js';
+import { createAuditLog } from '../services/audit.js';
 
 interface CompanyBody {
   name: string;
@@ -166,6 +167,14 @@ export async function companyRoutes(fastify: FastifyInstance) {
         },
       });
 
+      // Audit log
+      createAuditLog(request, {
+        action: 'create',
+        resource: 'company',
+        resourceId: company.id,
+        newValues: { name, industry, website, address, phone, size },
+      }).catch((err) => console.error('Audit log error:', err));
+
       return reply.status(201).send(company);
     }
   );
@@ -214,6 +223,15 @@ export async function companyRoutes(fastify: FastifyInstance) {
         data: request.body,
       });
 
+      // Audit log
+      createAuditLog(request, {
+        action: 'update',
+        resource: 'company',
+        resourceId: updated.id,
+        oldValues: { name: existing.name, industry: existing.industry, phone: existing.phone },
+        newValues: request.body,
+      }).catch((err) => console.error('Audit log error:', err));
+
       return reply.send(updated);
     }
   );
@@ -250,6 +268,15 @@ export async function companyRoutes(fastify: FastifyInstance) {
         await prisma.company.delete({
           where: { id: request.params.id },
         });
+
+        // Audit log
+        createAuditLog(request, {
+          action: 'delete',
+          resource: 'company',
+          resourceId: request.params.id,
+          oldValues: { name: existing.name, industry: existing.industry },
+        }).catch((err) => console.error('Audit log error:', err));
+
         return reply.status(204).send();
       } catch {
         return reply.status(404).send({ error: 'Company not found' });

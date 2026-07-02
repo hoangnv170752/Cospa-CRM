@@ -187,6 +187,10 @@ export default function ContractsPage() {
 
     setIsSubmitting(true);
     try {
+      // Convert date strings to ISO format for API validation
+      const startDateISO = formStartDate ? new Date(formStartDate).toISOString() : undefined;
+      const endDateISO = formEndDate ? new Date(formEndDate).toISOString() : undefined;
+
       const data = {
         contractNumber: formContractNumber.trim(),
         title: formTitle.trim(),
@@ -194,8 +198,8 @@ export default function ContractsPage() {
         type: formType as Contract["type"],
         vendorId: formVendorId || undefined,
         companyId: formCompanyId || undefined,
-        startDate: formStartDate,
-        endDate: formEndDate || undefined,
+        startDate: startDateISO,
+        endDate: endDateISO,
         autoRenew: formAutoRenew,
         totalValue: formTotalValue ? Number(formTotalValue) : undefined,
         currency: formCurrency,
@@ -319,13 +323,17 @@ export default function ContractsPage() {
 
       for (const item of items) {
         try {
+          // Convert date strings to ISO format for API validation
+          const startDateISO = item.startDate ? new Date(String(item.startDate)).toISOString() : undefined;
+          const endDateISO = item.endDate ? new Date(String(item.endDate)).toISOString() : undefined;
+
           await createContract({
             contractNumber: String(item.contractNumber).trim(),
             title: String(item.title).trim(),
             description: item.description ? String(item.description).trim() : undefined,
             type: (item.type as Contract["type"]) || "service",
-            startDate: String(item.startDate),
-            endDate: item.endDate ? String(item.endDate) : undefined,
+            startDate: startDateISO,
+            endDate: endDateISO,
             autoRenew: Boolean(item.autoRenew),
             totalValue: item.totalValue as number | undefined,
             currency: item.currency ? String(item.currency).trim() : "USD",

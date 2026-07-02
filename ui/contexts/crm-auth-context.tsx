@@ -20,13 +20,22 @@ export interface CrmUser {
   tenantId?: string;
 }
 
+interface LoginResult {
+  requiresTwoFactor?: boolean;
+  email?: string;
+}
+
+type OtpType = 'login' | 'two_factor';
+
 interface CrmAuthContextType {
   user: CrmUser | null;
   token: string | null;
   isLoading: boolean;
   isLoggedIn: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (email: string, password: string) => Promise<LoginResult | void>;
   logout: () => void;
+  requestOtp: (email: string, type: OtpType) => Promise<void>;
+  verifyOtp: (email: string, code: string, type: OtpType) => Promise<void>;
 }
 
 const CrmAuthContext = createContext<CrmAuthContextType | undefined>(undefined);
@@ -115,7 +124,7 @@ export function CrmAuthProvider({ children }: { children: ReactNode }) {
     getServerSnapshotToken
   );
 
-  const login = useCallback(async (email: string, password: string) => {
+  const login = useCallback(async (email: string, password: string): Promise<LoginResult | void> => {
     const response = await fetch(`${CRM_API_BASE_URL}/auth/login`, {
       method: 'POST',
       headers: {
@@ -127,6 +136,50 @@ export function CrmAuthProvider({ children }: { children: ReactNode }) {
     if (!response.ok) {
       const error = await response.json().catch(() => ({ message: 'Login failed' }));
       throw new Error(error.message || 'Login failed');
+    }
+
+    const data = await response.json();
+
+    // Check if 2FA is required
+    if (data.requiresTwoFactor) {
+      return { requiresTwoFactor: true, email: data.email };
+    }
+
+    const { token: newToken, user: userData } = data;
+
+    // Write to localStorage and notify subscribers
+    setCrmToken(newToken);
+    localStorage.setItem(CRM_USER_KEY, JSON.stringify(userData));
+    emitChange();
+  }, []);
+
+  const requestOtp = useCallback(async (email: string, type: OtpType) => {
+    const response = await fetch(`${CRM_API_BASE_URL}/auth/otp/request`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, type }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Failed to send OTP' }));
+      throw new Error(error.message || 'Failed to send OTP');
+    }
+  }, []);
+
+  const verifyOtp = useCallback(async (email: string, code: string, type: OtpType) => {
+    const response = await fetch(`${CRM_API_BASE_URL}/auth/otp/verify`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, code, type }),
+    });
+
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Invalid verification code' }));
+      throw new Error(error.message || 'Invalid verification code');
     }
 
     const data = await response.json();
@@ -153,6 +206,8 @@ export function CrmAuthProvider({ children }: { children: ReactNode }) {
         isLoggedIn: !!user,
         login,
         logout,
+        requestOtp,
+        verifyOtp,
       }}
     >
       {children}

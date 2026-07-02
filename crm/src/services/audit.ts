@@ -12,10 +12,11 @@ interface AuditLogInput {
 
 export async function createAuditLog(
   request: FastifyRequest,
-  input: AuditLogInput
+  input: AuditLogInput & { userId?: string; tenantId?: string }
 ) {
-  const userId = request.user?.userId || null;
-  const tenantId = request.user?.tenantId || null;
+  // Use provided userId/tenantId or fall back to request.user
+  const userId = input.userId || request.user?.userId || null;
+  const tenantId = input.tenantId || request.user?.tenantId || null;
 
   // Extract metadata from request
   const metadata = {

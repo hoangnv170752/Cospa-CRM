@@ -64,6 +64,7 @@ model User {
   role              UserRole   @default(tenant_user)
   status            UserStatus @default(active)
   emailVerified     Boolean    @default(false)
+  twoFactorEnabled  Boolean    @default(false) // Enable 2FA via OTP
   lastLoginAt       DateTime?
   createdAt         DateTime   @default(now())
   updatedAt         DateTime   @updatedAt
@@ -80,6 +81,7 @@ model User {
   feedbacks   Feedback[]
   chatSessions ChatSession[]
   serviceTickets ServiceTicket[]
+  otpCodes    OtpCode[]
 
   // Direct Messaging
   conversationParticipants ConversationParticipant[]
@@ -1004,6 +1006,33 @@ enum ConversationType {
   direct       // 1-to-1 between two users
   group        // Group chat (tenant users + sysadmin)
   support      // Tenant-to-SysAdmin support channel
+}
+
+// =====================
+// OTP (One-Time Password) for Authentication
+// =====================
+
+model OtpCode {
+  id        String    @id @default(uuid())
+  code      String    // 6-digit OTP code (hashed with bcrypt)
+  type      OtpType
+  attempts  Int       @default(0) // Failed verification attempts
+  expiresAt DateTime
+  usedAt    DateTime? // Null = not yet used
+  createdAt DateTime  @default(now())
+
+  // Relations
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, type])
+  @@index([expiresAt])
+  @@map("otp_codes")
+}
+
+enum OtpType {
+  login       // Passwordless login via OTP
+  two_factor  // 2FA after password verification
 }
 
 model ConversationParticipant {

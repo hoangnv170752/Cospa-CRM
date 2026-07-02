@@ -380,15 +380,12 @@ export default function AuditLogsPage() {
                           </td>
                           <td className="px-4 py-3">
                             <Dialog>
-                              <DialogTrigger>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => setSelectedLog(log)}
-                                >
-                                  <FileJson className="h-4 w-4 mr-1" />
-                                  View
-                                </Button>
+                              <DialogTrigger
+                                render={<Button variant="ghost" size="sm" />}
+                                onClick={() => setSelectedLog(log)}
+                              >
+                                <FileJson className="h-4 w-4 mr-1" />
+                                View
                               </DialogTrigger>
                               <DialogContent className="max-w-2xl max-h-[80vh] overflow-auto">
                                 <DialogHeader>

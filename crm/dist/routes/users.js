@@ -2,6 +2,7 @@ import { prisma } from '../services/prisma.js';
 import { hashPassword } from '../services/auth.js';
 import { authenticate, requireTenantAdmin, withTenantScope } from '../middleware/auth.js';
 import { uploadImage, deleteImage, extractPublicId } from '../services/cloudinary.js';
+import { createAuditLog } from '../services/audit.js';
 export async function userRoutes(fastify) {
     // All routes require authentication
     fastify.addHook('preHandler', authenticate);
@@ -188,6 +189,13 @@ export async function userRoutes(fastify) {
                 company: true,
             },
         });
+        // Audit log
+        createAuditLog(request, {
+            action: 'create',
+            resource: 'user',
+            resourceId: user.id,
+            newValues: { email, firstName, lastName, role: userRole },
+        }).catch((err) => console.error('Audit log error:', err));
         // Don't expose password hash
         const { passwordHash, ...userData } = user;
         return reply.status(201).send(userData);
@@ -250,6 +258,14 @@ export async function userRoutes(fastify) {
                 company: true,
             },
         });
+        // Audit log
+        createAuditLog(request, {
+            action: 'update',
+            resource: 'user',
+            resourceId: user.id,
+            oldValues: { email: existing.email, firstName: existing.firstName, lastName: existing.lastName, role: existing.role, status: existing.status },
+            newValues: request.body,
+        }).catch((err) => console.error('Audit log error:', err));
         const { passwordHash, ...userData } = user;
         return reply.send(userData);
     });
@@ -291,6 +307,14 @@ export async function userRoutes(fastify) {
             where: { id: request.params.id },
             data: { status: 'inactive' },
         });
+        // Audit log
+        createAuditLog(request, {
+            action: 'deactivate',
+            resource: 'user',
+            resourceId: request.params.id,
+            oldValues: { email: existing.email, status: existing.status },
+            newValues: { status: 'inactive' },
+        }).catch((err) => console.error('Audit log error:', err));
         return reply.status(204).send();
     });
     // PUT /users/:id/permissions - Manage user permissions

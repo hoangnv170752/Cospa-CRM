@@ -1,5 +1,6 @@
 import { prisma } from '../services/prisma.js';
 import { authenticate, requireRole } from '../middleware/auth.js';
+import { createAuditLog } from '../services/audit.js';
 export async function dealRoutes(fastify) {
     // GET /deals
     fastify.get('/deals', {
@@ -113,6 +114,13 @@ export async function dealRoutes(fastify) {
                 company: true,
             },
         });
+        // Audit log
+        createAuditLog(request, {
+            action: 'create',
+            resource: 'deal',
+            resourceId: deal.id,
+            newValues: { title, value, currency, stage, companyId },
+        }).catch((err) => console.error('Audit log error:', err));
         return reply.status(201).send(deal);
     });
     // PUT /deals/:id
@@ -145,6 +153,14 @@ export async function dealRoutes(fastify) {
                 company: true,
             },
         });
+        // Audit log
+        createAuditLog(request, {
+            action: 'update',
+            resource: 'deal',
+            resourceId: updated.id,
+            oldValues: { title: existing.title, value: existing.value, stage: existing.stage },
+            newValues: request.body,
+        }).catch((err) => console.error('Audit log error:', err));
         return reply.send(updated);
     });
     // DELETE /deals/:id
@@ -169,6 +185,13 @@ export async function dealRoutes(fastify) {
             await prisma.deal.delete({
                 where: { id: request.params.id },
             });
+            // Audit log
+            createAuditLog(request, {
+                action: 'delete',
+                resource: 'deal',
+                resourceId: request.params.id,
+                oldValues: { title: existing.title, value: existing.value, stage: existing.stage },
+            }).catch((err) => console.error('Audit log error:', err));
             return reply.status(204).send();
         }
         catch {

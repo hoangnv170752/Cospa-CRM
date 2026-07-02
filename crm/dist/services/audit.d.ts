@@ -7,7 +7,10 @@ interface AuditLogInput {
     newValues?: Record<string, unknown>;
     metadata?: Record<string, unknown>;
 }
-export declare function createAuditLog(request: FastifyRequest, input: AuditLogInput): Promise<{
+export declare function createAuditLog(request: FastifyRequest, input: AuditLogInput & {
+    userId?: string;
+    tenantId?: string;
+}): Promise<{
     id: string;
     createdAt: Date;
     tenantId: string | null;

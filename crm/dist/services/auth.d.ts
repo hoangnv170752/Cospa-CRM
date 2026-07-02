@@ -91,6 +91,7 @@ export declare function getUserById(userId: string): Promise<({
     thingsboardUserId: string | null;
     role: import("@prisma/client").$Enums.UserRole;
     emailVerified: boolean;
+    twoFactorEnabled: boolean;
     lastLoginAt: Date | null;
     tenantId: string | null;
     companyId: string | null;

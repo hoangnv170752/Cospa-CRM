@@ -1,5 +1,6 @@
 import { prisma } from '../services/prisma.js';
 import { authenticate, requireRole } from '../middleware/auth.js';
+import { createAuditLog } from '../services/audit.js';
 export async function contactRoutes(fastify) {
     // GET /contacts
     fastify.get('/contacts', {
@@ -107,6 +108,13 @@ export async function contactRoutes(fastify) {
             },
             include: { company: true },
         });
+        // Audit log
+        createAuditLog(request, {
+            action: 'create',
+            resource: 'contact',
+            resourceId: contact.id,
+            newValues: { firstName, lastName, email, phone, companyId, position },
+        }).catch((err) => console.error('Audit log error:', err));
         return reply.status(201).send(contact);
     });
     // PUT /contacts/:id
@@ -132,6 +140,19 @@ export async function contactRoutes(fastify) {
             data: request.body,
             include: { company: true },
         });
+        // Audit log
+        createAuditLog(request, {
+            action: 'update',
+            resource: 'contact',
+            resourceId: updated.id,
+            oldValues: {
+                firstName: existing.firstName,
+                lastName: existing.lastName,
+                email: existing.email,
+                phone: existing.phone,
+            },
+            newValues: request.body,
+        }).catch((err) => console.error('Audit log error:', err));
         return reply.send(updated);
     });
     // DELETE /contacts/:id
@@ -156,6 +177,17 @@ export async function contactRoutes(fastify) {
             await prisma.contact.delete({
                 where: { id: request.params.id },
             });
+            // Audit log
+            createAuditLog(request, {
+                action: 'delete',
+                resource: 'contact',
+                resourceId: request.params.id,
+                oldValues: {
+                    firstName: existing.firstName,
+                    lastName: existing.lastName,
+                    email: existing.email,
+                },
+            }).catch((err) => console.error('Audit log error:', err));
             return reply.status(204).send();
         }
         catch {

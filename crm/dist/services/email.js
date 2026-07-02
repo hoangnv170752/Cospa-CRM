@@ -237,6 +237,142 @@ export async function sendPasswordResetEmail(params) {
     }
 }
 /**
+ * Send an OTP verification email
+ */
+export async function sendOtpEmail(params) {
+    const { email, firstName, otp, type } = params;
+    const typeMessages = {
+        login: {
+            title: 'Sign In Verification',
+            description: 'Use this code to sign in to your account:',
+        },
+        two_factor: {
+            title: 'Two-Factor Authentication',
+            description: 'Use this code to complete your sign in:',
+        },
+    };
+    const { title, description } = typeMessages[type];
+    const htmlContent = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>${title}</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background-color: #f5f5f5;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background-color: #f5f5f5; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 40px 40px 30px; text-align: center;">
+              <h1 style="color: #ffffff; margin: 0; font-size: 28px; font-weight: 600;">${title}</h1>
+            </td>
+          </tr>
+
+          <!-- Content -->
+          <tr>
+            <td style="padding: 40px;">
+              <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+                Hi <strong>${firstName}</strong>,
+              </p>
+
+              <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 0 0 20px;">
+                ${description}
+              </p>
+
+              <!-- OTP Code -->
+              <div style="text-align: center; margin: 30px 0;">
+                <div style="display: inline-block; background-color: #f8f9fa; border: 2px dashed #667eea; border-radius: 12px; padding: 20px 40px;">
+                  <span style="font-family: 'Courier New', monospace; font-size: 36px; font-weight: 700; letter-spacing: 8px; color: #333333;">
+                    ${otp}
+                  </span>
+                </div>
+              </div>
+
+              <p style="color: #666666; font-size: 14px; line-height: 1.6; margin: 0 0 20px; text-align: center;">
+                This code will expire in <strong>5 minutes</strong>.
+              </p>
+
+              <div style="background-color: #fff3cd; border-left: 4px solid #ffc107; padding: 15px; margin: 20px 0; border-radius: 4px;">
+                <p style="color: #856404; font-size: 14px; margin: 0;">
+                  <strong>Security tip:</strong> Never share this code with anyone. ${APP_NAME} will never ask for your verification code.
+                </p>
+              </div>
+
+              <p style="color: #666666; font-size: 14px; line-height: 1.6; margin: 20px 0 0;">
+                If you didn't request this code, you can safely ignore this email. Someone may have entered your email address by mistake.
+              </p>
+
+              <p style="color: #333333; font-size: 16px; line-height: 1.6; margin: 30px 0 0;">
+                Best regards,<br>
+                <strong>The ${APP_NAME} Team</strong>
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color: #f8f9fa; padding: 25px 40px; border-top: 1px solid #e9ecef;">
+              <p style="color: #6c757d; font-size: 13px; margin: 0; text-align: center;">
+                &copy; ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>
+  `.trim();
+    const textContent = `
+${title}
+
+Hi ${firstName},
+
+${description}
+
+Your verification code is: ${otp}
+
+This code will expire in 5 minutes.
+
+Security tip: Never share this code with anyone. ${APP_NAME} will never ask for your verification code.
+
+If you didn't request this code, you can safely ignore this email.
+
+Best regards,
+The ${APP_NAME} Team
+
+---
+© ${new Date().getFullYear()} ${APP_NAME}. All rights reserved.
+  `.trim();
+    try {
+        const result = await resend.emails.send({
+            from: `${APP_NAME} <${FROM_EMAIL}>`,
+            to: email,
+            subject: `${otp} is your ${APP_NAME} verification code`,
+            html: htmlContent,
+            text: textContent,
+        });
+        if (result.error) {
+            console.error('Failed to send OTP email:', result.error);
+            return { success: false, error: String(result.error) };
+        }
+        console.log(`OTP email sent to ${email}, id: ${result.data?.id}`);
+        return { success: true, id: result.data?.id };
+    }
+    catch (error) {
+        console.error('Error sending OTP email:', error);
+        return {
+            success: false,
+            error: error instanceof Error ? error.message : String(error),
+        };
+    }
+}
+/**
  * Send a generic notification email
  */
 export async function sendNotificationEmail(params) {

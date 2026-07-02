@@ -80,22 +80,24 @@ export async function contactFormRoutes(fastify) {
 </body>
 </html>`.trim();
         try {
-            const result = await resend.emails.send({
-                from: `${APP_NAME} Contact <${FROM_EMAIL}>`,
-                to: DEV_TEAM_EMAIL,
-                replyTo: email,
-                subject: `[Contact] ${name} — ${message.substring(0, 60)}${message.length > 60 ? '...' : ''}`,
-                html: htmlContent,
-                text: `New contact form message\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
-            });
-            if (result.error) {
-                console.error('Failed to send contact form email:', result.error);
-                return reply.status(500).send({
-                    success: false,
-                    error: 'Failed to send message. Please try again later.',
-                });
-            }
-            console.log(`Contact form email sent from ${email}, resend id: ${result.data?.id}`);
+            // TODO: Uncomment to enable email sending
+            // const result = await resend.emails.send({
+            //   from: `${APP_NAME} Contact <${FROM_EMAIL}>`,
+            //   to: DEV_TEAM_EMAIL,
+            //   replyTo: email,
+            //   subject: `[Contact] ${name} — ${message.substring(0, 60)}${message.length > 60 ? '...' : ''}`,
+            //   html: htmlContent,
+            //   text: `New contact form message\n\nName: ${name}\nEmail: ${email}\n\nMessage:\n${message}`,
+            // });
+            // if (result.error) {
+            //   console.error('Failed to send contact form email:', result.error);
+            //   return reply.status(500).send({
+            //     success: false,
+            //     error: 'Failed to send message. Please try again later.',
+            //   });
+            // }
+            // console.log(`Contact form email sent from ${email}, resend id: ${result.data?.id}`);
+            console.log(`Contact form received from ${name} <${email}>: ${message.substring(0, 100)}`);
             return reply.send({
                 success: true,
                 message: 'Message sent successfully',

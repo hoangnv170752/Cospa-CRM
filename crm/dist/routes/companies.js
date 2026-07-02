@@ -1,5 +1,6 @@
 import { prisma } from '../services/prisma.js';
 import { authenticate, withTenantScope, requireRole } from '../middleware/auth.js';
+import { createAuditLog } from '../services/audit.js';
 export async function companyRoutes(fastify) {
     // GET /companies
     fastify.get('/companies', {
@@ -121,6 +122,13 @@ export async function companyRoutes(fastify) {
                 tenantId: request.user.tenantId,
             },
         });
+        // Audit log
+        createAuditLog(request, {
+            action: 'create',
+            resource: 'company',
+            resourceId: company.id,
+            newValues: { name, industry, website, address, phone, size },
+        }).catch((err) => console.error('Audit log error:', err));
         return reply.status(201).send(company);
     });
     // PUT /companies/:id
@@ -160,6 +168,14 @@ export async function companyRoutes(fastify) {
             where: { id: request.params.id },
             data: request.body,
         });
+        // Audit log
+        createAuditLog(request, {
+            action: 'update',
+            resource: 'company',
+            resourceId: updated.id,
+            oldValues: { name: existing.name, industry: existing.industry, phone: existing.phone },
+            newValues: request.body,
+        }).catch((err) => console.error('Audit log error:', err));
         return reply.send(updated);
     });
     // DELETE /companies/:id
@@ -188,6 +204,13 @@ export async function companyRoutes(fastify) {
             await prisma.company.delete({
                 where: { id: request.params.id },
             });
+            // Audit log
+            createAuditLog(request, {
+                action: 'delete',
+                resource: 'company',
+                resourceId: request.params.id,
+                oldValues: { name: existing.name, industry: existing.industry },
+            }).catch((err) => console.error('Audit log error:', err));
             return reply.status(204).send();
         }
         catch {

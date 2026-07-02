@@ -22,6 +22,15 @@ export declare function sendPasswordResetEmail(params: {
     resetToken: string;
 }): Promise<EmailResult>;
 /**
+ * Send an OTP verification email
+ */
+export declare function sendOtpEmail(params: {
+    email: string;
+    firstName: string;
+    otp: string;
+    type: 'login' | 'two_factor';
+}): Promise<EmailResult>;
+/**
  * Send a generic notification email
  */
 export declare function sendNotificationEmail(params: {

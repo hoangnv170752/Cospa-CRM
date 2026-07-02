@@ -1,1 +1,1 @@
-{"version":3,"file":"companies.d.ts","sourceRoot":"","sources":["../../src/routes/companies.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,eAAe,EAAE,MAAM,SAAS,CAAC;AAwB1C,wBAAsB,aAAa,CAAC,OAAO,EAAE,eAAe,iBA0O3D"}
+{"version":3,"file":"companies.d.ts","sourceRoot":"","sources":["../../src/routes/companies.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,eAAe,EAAE,MAAM,SAAS,CAAC;AAyB1C,wBAAsB,aAAa,CAAC,OAAO,EAAE,eAAe,iBAoQ3D"}

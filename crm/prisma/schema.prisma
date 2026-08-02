@@ -41,6 +41,7 @@ model Tenant {
   auditLogs         AuditLog[]
   emails            Email[]
   inboundEmails     InboundEmail[]
+  calendarEvents    CalendarEvent[]
 
   @@map("tenants")
 }
@@ -89,6 +90,10 @@ model User {
 
   // Email History
   sentEmails Email[]
+
+  // Google Calendar
+  googleCalendarToken GoogleCalendarToken?
+  calendarEvents      CalendarEvent[]
 
   @@index([tenantId])
   @@index([role])
@@ -1066,4 +1071,71 @@ model DirectMessage {
 
   @@index([conversationId, createdAt])
   @@map("direct_messages")
+}
+
+// =====================
+// Google Calendar Integration
+// =====================
+
+model GoogleCalendarToken {
+  id           String   @id @default(uuid())
+  accessToken  String   @db.Text
+  refreshToken String   @db.Text
+  tokenType    String   @default("Bearer")
+  scope        String?
+  expiresAt    DateTime
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("google_calendar_tokens")
+}
+
+model CalendarEvent {
+  id              String            @id @default(uuid())
+  googleEventId   String?           // Google Calendar event ID for sync
+  title           String
+  description     String?           @db.Text
+  location        String?
+  startTime       DateTime
+  endTime         DateTime
+  allDay          Boolean           @default(false)
+  timezone        String            @default("UTC")
+  recurrence      String?           // RRULE string for recurring events
+  status          CalendarEventStatus @default(confirmed)
+  visibility      CalendarEventVisibility @default(default)
+  reminders       Json?             // Array of reminder settings
+  attendees       Json?             // Array of attendee emails/names
+  meetLink        String?           // Google Meet link if created
+  color           String?           // Event color
+  syncedAt        DateTime?         // Last sync with Google Calendar
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  // Relations
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tenantId  String?
+  tenant    Tenant?  @relation(fields: [tenantId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, googleEventId])
+  @@index([userId, startTime])
+  @@index([tenantId, startTime])
+  @@map("calendar_events")
+}
+
+enum CalendarEventStatus {
+  confirmed
+  tentative
+  cancelled
+}
+
+enum CalendarEventVisibility {
+  default
+  public
+  private
+  confidential
 }

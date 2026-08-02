@@ -3,7 +3,8 @@
 import { useEffect, useState, useRef } from "react";
 import Image from "next/image";
 import { useCrmAuth } from "@/contexts/crm-auth-context";
-import { crmFetch } from "@/lib/crm";
+import { crmFetch, getCalendarStatus, getCalendarAuthUrl, disconnectCalendar, syncCalendar, CalendarStatus } from "@/lib/crm";
+import Link from "next/link";
 import {
   User,
   CreditCard,
@@ -15,6 +16,11 @@ import {
   Save,
   Camera,
   Trash2,
+  Calendar,
+  Link2,
+  Link2Off,
+  RefreshCw,
+  ExternalLink,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -111,6 +117,11 @@ export default function SettingsPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
 
+  // Google Calendar state
+  const [calendarStatus, setCalendarStatus] = useState<CalendarStatus | null>(null);
+  const [isCalendarLoading, setIsCalendarLoading] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+
   useEffect(() => {
     async function loadProfile() {
       try {
@@ -129,6 +140,86 @@ export default function SettingsPage() {
 
     loadProfile();
   }, []);
+
+  // Load calendar status for non-admin users
+  useEffect(() => {
+    async function loadCalendarStatus() {
+      if (authUser?.role === "sys_admin") return;
+      try {
+        const status = await getCalendarStatus();
+        setCalendarStatus(status);
+      } catch (err) {
+        console.error("Failed to load calendar status:", err);
+      }
+    }
+    loadCalendarStatus();
+  }, [authUser?.role]);
+
+  // Check URL params for calendar connection status
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const calendarConnected = params.get("calendar_connected");
+    const calendarError = params.get("calendar_error");
+
+    if (calendarConnected === "true" || calendarError) {
+      // Clean URL first
+      window.history.replaceState({}, "", window.location.pathname);
+
+      // Show toast after a small delay to avoid setState in effect
+      setTimeout(() => {
+        if (calendarConnected === "true") {
+          toast.success("Google Calendar connected successfully!");
+          // Reload calendar status
+          getCalendarStatus().then(setCalendarStatus).catch(() => {});
+        }
+        if (calendarError) {
+          toast.error(`Calendar connection failed: ${calendarError}`);
+        }
+      }, 0);
+    }
+  }, []);
+
+  const handleConnectCalendar = async () => {
+    setIsCalendarLoading(true);
+    try {
+      const { authUrl } = await getCalendarAuthUrl();
+      window.location.href = authUrl;
+    } catch (err) {
+      console.error("Failed to get auth URL:", err);
+      toast.error("Failed to start Google Calendar connection");
+      setIsCalendarLoading(false);
+    }
+  };
+
+  const handleDisconnectCalendar = async () => {
+    if (!confirm("Disconnect Google Calendar? This will remove all synced events.")) return;
+    setIsCalendarLoading(true);
+    try {
+      await disconnectCalendar();
+      setCalendarStatus({ connected: false });
+      toast.success("Google Calendar disconnected");
+    } catch (err) {
+      console.error("Failed to disconnect:", err);
+      toast.error("Failed to disconnect Google Calendar");
+    } finally {
+      setIsCalendarLoading(false);
+    }
+  };
+
+  const handleSyncCalendar = async () => {
+    setIsSyncing(true);
+    try {
+      const result = await syncCalendar();
+      toast.success(`Synced ${result.syncedCount} events from Google Calendar`);
+      const status = await getCalendarStatus();
+      setCalendarStatus(status);
+    } catch (err) {
+      console.error("Failed to sync:", err);
+      toast.error("Failed to sync with Google Calendar");
+    } finally {
+      setIsSyncing(false);
+    }
+  };
 
   const handleSaveProfile = async () => {
     setIsSaving(true);
@@ -566,6 +657,98 @@ export default function SettingsPage() {
                   <p className="text-[10px] text-muted-foreground">Contact admin</p>
                 </div>
               )}
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Google Calendar - Only for non-admin users */}
+        {authUser?.role !== "sys_admin" && (
+          <Card>
+            <CardHeader className="pb-2 pt-3 px-4">
+              <CardTitle className="text-sm flex items-center gap-1.5">
+                <Calendar className="h-3.5 w-3.5" />
+                Google Calendar
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="px-4 pb-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div
+                    className={`w-3 h-3 rounded-full ${
+                      calendarStatus?.connected ? "bg-green-500" : "bg-gray-400"
+                    }`}
+                  />
+                  <div>
+                    <p className="font-medium text-sm">
+                      {calendarStatus?.connected ? "Connected" : "Not Connected"}
+                    </p>
+                    {calendarStatus?.lastSyncedAt && (
+                      <p className="text-[10px] text-muted-foreground">
+                        Last synced: {new Date(calendarStatus.lastSyncedAt).toLocaleString()}
+                      </p>
+                    )}
+                    {!calendarStatus?.connected && (
+                      <p className="text-[10px] text-muted-foreground">
+                        Sync your events with Google Calendar
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="flex items-center gap-2">
+                  {calendarStatus?.connected ? (
+                    <>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleSyncCalendar}
+                        disabled={isSyncing}
+                        className="h-7 text-xs"
+                      >
+                        {isSyncing ? (
+                          <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                        ) : (
+                          <RefreshCw className="h-3 w-3 mr-1" />
+                        )}
+                        Sync
+                      </Button>
+                      <Link href="/crm/calendar">
+                        <Button variant="outline" size="sm" className="h-7 text-xs">
+                          <ExternalLink className="h-3 w-3 mr-1" />
+                          View Calendar
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={handleDisconnectCalendar}
+                        disabled={isCalendarLoading}
+                        className="h-7 text-xs text-destructive hover:text-destructive"
+                      >
+                        {isCalendarLoading ? (
+                          <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                        ) : (
+                          <Link2Off className="h-3 w-3 mr-1" />
+                        )}
+                        Disconnect
+                      </Button>
+                    </>
+                  ) : (
+                    <Button
+                      size="sm"
+                      onClick={handleConnectCalendar}
+                      disabled={isCalendarLoading}
+                      className="h-7 text-xs"
+                    >
+                      {isCalendarLoading ? (
+                        <Loader2 className="h-3 w-3 animate-spin mr-1" />
+                      ) : (
+                        <Link2 className="h-3 w-3 mr-1" />
+                      )}
+                      Connect Google Calendar
+                    </Button>
+                  )}
+                </div>
+              </div>
             </CardContent>
           </Card>
         )}

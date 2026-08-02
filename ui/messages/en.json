@@ -175,6 +175,7 @@
       "vendors": "Vendors",
       "contracts": "Contracts",
       "tickets": "Tickets",
+      "calendar": "Calendar",
       "auditLogs": "Audit Logs",
       "settings": "Settings"
     }

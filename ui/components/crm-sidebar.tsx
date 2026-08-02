@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { cn } from "@/lib/utils";
-import { LayoutDashboard, Building2, Users, HandCoins, Truck, FileText, TicketCheck, Package, Shield, Settings, History } from "lucide-react";
+import { LayoutDashboard, Building2, Users, HandCoins, Truck, FileText, TicketCheck, Package, Shield, Settings, History, Calendar } from "lucide-react";
 import { useCrmAuth } from "@/contexts/crm-auth-context";
 
 interface NavItem {
@@ -12,6 +12,7 @@ interface NavItem {
   href: string;
   icon: React.ReactNode;
   sysAdminOnly?: boolean;
+  hiddenForSysAdmin?: boolean;
 }
 
 const crmNavItems: NavItem[] = [
@@ -60,6 +61,12 @@ const crmNavItems: NavItem[] = [
     titleKey: "nav.crm.tickets",
     href: "/crm/tickets",
     icon: <TicketCheck className="h-4 w-4" />,
+  },
+  {
+    titleKey: "nav.crm.calendar",
+    href: "/crm/calendar",
+    icon: <Calendar className="h-4 w-4" />,
+    hiddenForSysAdmin: true,
   },
   {
     titleKey: "nav.crm.auditLogs",
@@ -117,7 +124,11 @@ export function CrmSidebar({ collapsed = false, onNavigate }: CrmSidebarProps) {
 
   // Filter nav items based on role
   const filteredNavItems = crmNavItems.filter(
-    (item) => !item.sysAdminOnly || isSysAdmin
+    (item) => {
+      if (item.sysAdminOnly && !isSysAdmin) return false;
+      if (item.hiddenForSysAdmin && isSysAdmin) return false;
+      return true;
+    }
   );
 
   return (

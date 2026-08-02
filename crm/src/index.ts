@@ -36,6 +36,7 @@ import { auditLogRoutes } from './routes/audit-logs.js';
 import { supportRoutes } from './routes/support.js';
 import { webhookRoutes } from './routes/webhooks.js';
 import { contactFormRoutes } from './routes/contact-form.js';
+import { calendarRoutes } from './routes/calendar.js';
 
 // Services
 import { prisma } from './services/prisma.js';
@@ -138,6 +139,7 @@ Enterprise CRM REST API for IoT Dashboard with:
         { name: 'Chat', description: 'AI assistant chat session history' },
         { name: 'Messaging', description: 'Direct messaging between users/tenants and SysAdmin' },
         { name: 'Support', description: 'Simplified support chat for tenant users to contact administrators' },
+        { name: 'Calendar', description: 'Google Calendar integration for event sync (tenant users only)' },
       ],
       components: {
         securitySchemes: {
@@ -456,6 +458,9 @@ Enterprise CRM REST API for IoT Dashboard with:
 
   // Contact Form (public, no auth)
   await fastify.register(contactFormRoutes, { prefix: '/api' });
+
+  // Calendar Routes (Google Calendar integration)
+  await fastify.register(calendarRoutes, { prefix: '/api' });
 
   // Health check
   fastify.get('/health', {

@@ -2,6 +2,9 @@
 // Base URL for CRM backend
 const CRM_API_BASE_URL = process.env.NEXT_PUBLIC_CRM_API_URL || 'http://localhost:5001/api';
 
+// Flag to prevent multiple redirects
+let isRedirecting = false;
+
 // Get auth token from localStorage
 function getToken(): string | null {
   if (typeof window === 'undefined') return null;
@@ -22,11 +25,28 @@ export function removeCrmToken(): void {
   }
 }
 
+// Handle 401 logout - clear storage and redirect
+function handleUnauthorized(): never {
+  if (!isRedirecting && typeof window !== 'undefined') {
+    isRedirecting = true;
+    removeCrmToken();
+    localStorage.removeItem('crm_user');
+    window.location.replace('/crm-signin');
+  }
+  // Throw to stop execution, but this won't be caught since we're redirecting
+  throw new Error('Session expired');
+}
+
 // Common fetch wrapper with auth
 export async function crmFetch<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
+  // If already redirecting, don't make any more requests
+  if (isRedirecting) {
+    throw new Error('Session expired');
+  }
+
   const token = getToken();
 
   const headers: HeadersInit = {
@@ -44,6 +64,11 @@ export async function crmFetch<T>(
   });
 
   if (!response.ok) {
+    // Auto logout on 401 Unauthorized
+    if (response.status === 401) {
+      handleUnauthorized();
+    }
+
     const text = await response.text().catch(() => '');
     throw new Error(text || `Request failed with status ${response.status}`);
   }
@@ -626,5 +651,113 @@ export async function sendSingleEmail(data: {
   return crmFetch<{ success: boolean; id?: string }>('/emails/send', {
     method: 'POST',
     body: JSON.stringify(data),
+  });
+}
+
+// =====================
+// Calendar API
+// =====================
+
+export interface CalendarEvent {
+  id: string;
+  googleEventId?: string;
+  title: string;
+  description?: string;
+  location?: string;
+  startTime: string;
+  endTime: string;
+  allDay: boolean;
+  timezone: string;
+  status: 'confirmed' | 'tentative' | 'cancelled';
+  visibility: 'default' | 'public' | 'private' | 'confidential';
+  meetLink?: string;
+  attendees?: string; // JSON string
+  syncedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CalendarStatus {
+  connected: boolean;
+  lastSyncedAt?: string;
+}
+
+export async function getCalendarAuthUrl(): Promise<{ authUrl: string }> {
+  return crmFetch<{ authUrl: string }>('/calendar/google/auth');
+}
+
+export async function getCalendarStatus(): Promise<CalendarStatus> {
+  return crmFetch<CalendarStatus>('/calendar/status');
+}
+
+export async function disconnectCalendar(): Promise<{ success: boolean; message: string }> {
+  return crmFetch<{ success: boolean; message: string }>('/calendar/google/disconnect', {
+    method: 'POST',
+  });
+}
+
+export async function syncCalendar(): Promise<{ success: boolean; syncedCount: number }> {
+  return crmFetch<{ success: boolean; syncedCount: number }>('/calendar/sync', {
+    method: 'POST',
+  });
+}
+
+export async function fetchCalendarEvents(options: {
+  page?: number;
+  limit?: number;
+  startDate?: string;
+  endDate?: string;
+} = {}): Promise<PaginatedResponse<CalendarEvent>> {
+  const { page = 1, limit = 50, startDate, endDate } = options;
+  const params = new URLSearchParams({
+    page: page.toString(),
+    limit: limit.toString(),
+  });
+  if (startDate) params.append('startDate', startDate);
+  if (endDate) params.append('endDate', endDate);
+
+  return crmFetch<PaginatedResponse<CalendarEvent>>(`/calendar/events?${params}`);
+}
+
+export async function getCalendarEvent(id: string): Promise<CalendarEvent> {
+  return crmFetch<CalendarEvent>(`/calendar/events/${id}`);
+}
+
+export async function createCalendarEvent(data: {
+  title: string;
+  description?: string;
+  location?: string;
+  startTime: string;
+  endTime: string;
+  allDay?: boolean;
+  timezone?: string;
+  attendees?: { email: string; name?: string }[];
+  createMeet?: boolean;
+}): Promise<{ localEvent: CalendarEvent }> {
+  return crmFetch<{ localEvent: CalendarEvent }>('/calendar/events', {
+    method: 'POST',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function updateCalendarEvent(id: string, data: {
+  title?: string;
+  description?: string;
+  location?: string;
+  startTime?: string;
+  endTime?: string;
+  allDay?: boolean;
+  timezone?: string;
+  attendees?: { email: string; name?: string }[];
+}): Promise<{ localEvent: CalendarEvent }> {
+  return crmFetch<{ localEvent: CalendarEvent }>(`/calendar/events/${id}`, {
+    method: 'PUT',
+    body: JSON.stringify(data),
+  });
+}
+
+export async function deleteCalendarEvent(id: string): Promise<void> {
+  return crmFetch<void>(`/calendar/events/${id}`, {
+    method: 'DELETE',
   });
 }

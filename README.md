@@ -69,6 +69,7 @@ The CRM module provides enterprise-grade customer relationship management with m
 - **Role-Based Access Control (RBAC)** - 4 user levels: SysAdmin, Tenant Admin, Tenant User, Customer User
 - **Self-Service Registration** - Organizations can register and await admin approval
 - **Subscription Plans** - Free, Starter, Professional, Enterprise tiers with usage limits
+- **Google Calendar Integration** - OAuth 2.0 sync with Google Calendar for event management and Google Meet links
 
 ### CRM Entities
 
@@ -82,6 +83,7 @@ The CRM module provides enterprise-grade customer relationship management with m
 | **Vendors**   | Supplier management                         |
 | **Contracts** | Service agreements with companies/vendors   |
 | **Tickets**   | Service/support ticket management           |
+| **Calendar**  | Google Calendar sync for scheduling         |
 
 ### User Roles
 

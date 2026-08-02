@@ -1,5 +1,6 @@
 import { google, calendar_v3 } from 'googleapis';
 import type { Credentials } from 'google-auth-library';
+import { Prisma } from '@prisma/client';
 import { prisma } from './prisma.js';
 
 // Google OAuth2 configuration
@@ -236,7 +237,7 @@ export async function syncEventsFromGoogle(
         meetLink: event.hangoutLink || null,
         attendees: event.attendees
           ? JSON.stringify(event.attendees.map((a) => ({ email: a.email, name: a.displayName })))
-          : null,
+          : Prisma.JsonNull,
         syncedAt: new Date(),
       },
       update: {
@@ -252,7 +253,7 @@ export async function syncEventsFromGoogle(
         meetLink: event.hangoutLink || null,
         attendees: event.attendees
           ? JSON.stringify(event.attendees.map((a) => ({ email: a.email, name: a.displayName })))
-          : null,
+          : Prisma.JsonNull,
         syncedAt: new Date(),
       },
     });
@@ -295,7 +296,7 @@ export async function createEvent(
       endTime: eventData.endTime,
       allDay: eventData.allDay || false,
       timezone: eventData.timezone || 'UTC',
-      attendees: eventData.attendees ? JSON.stringify(eventData.attendees) : null,
+      attendees: eventData.attendees ? JSON.stringify(eventData.attendees) : Prisma.JsonNull,
     },
   });
 

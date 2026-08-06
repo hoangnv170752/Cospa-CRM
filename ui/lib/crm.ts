@@ -693,12 +693,14 @@ export async function getCalendarStatus(): Promise<CalendarStatus> {
 export async function disconnectCalendar(): Promise<{ success: boolean; message: string }> {
   return crmFetch<{ success: boolean; message: string }>('/calendar/google/disconnect', {
     method: 'POST',
+    body: JSON.stringify({}),
   });
 }
 
 export async function syncCalendar(): Promise<{ success: boolean; syncedCount: number }> {
   return crmFetch<{ success: boolean; syncedCount: number }>('/calendar/sync', {
     method: 'POST',
+    body: JSON.stringify({}),
   });
 }
 

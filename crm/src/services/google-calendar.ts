@@ -506,7 +506,7 @@ export async function getEvents(
       where,
       skip,
       take: limit,
-      orderBy: { startTime: 'asc' },
+      orderBy: { startTime: 'desc' },
     }),
     prisma.calendarEvent.count({ where }),
   ]);
